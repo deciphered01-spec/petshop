@@ -1,0 +1,134 @@
+import { type NextRequest, NextResponse } from 'next/server';
+import { createMiddlewareClient } from '@/lib/supabase/middleware';
+import type { UserRole } from '@/types/database';
+
+/**
+ * Route protection configuration
+ */
+const PROTECTED_ROUTES = {
+    // Routes that require 'director' role only
+    admin: ['/admin'],
+    // Routes that require 'director' OR 'manager' role
+    dashboard: ['/dashboard'],
+    // Routes that require any authenticated user
+    authenticated: ['/account', '/orders'],
+};
+
+/**
+ * Check if a path matches any of the protected route patterns
+ */
+function matchesRoutePattern(pathname: string, patterns: string[]): boolean {
+    return patterns.some((pattern) => pathname.startsWith(pattern));
+}
+
+/**
+ * Determine required role for a given pathname
+ */
+function getRequiredRole(pathname: string): 'director' | 'staff' | 'authenticated' | null {
+    if (matchesRoutePattern(pathname, PROTECTED_ROUTES.admin)) {
+        return 'director';
+    }
+    if (matchesRoutePattern(pathname, PROTECTED_ROUTES.dashboard)) {
+        return 'staff';
+    }
+    if (matchesRoutePattern(pathname, PROTECTED_ROUTES.authenticated)) {
+        return 'authenticated';
+    }
+    return null;
+}
+
+/**
+ * Check if user role satisfies the required access level
+ */
+function hasAccess(userRole: UserRole | null, required: 'director' | 'staff' | 'authenticated'): boolean {
+    if (!userRole) return false;
+
+    switch (required) {
+        case 'director':
+            return userRole === 'director';
+        case 'staff':
+            return userRole === 'director' || userRole === 'manager';
+        case 'authenticated':
+            return true; // Any authenticated user
+        default:
+            return false;
+    }
+}
+
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // Skip middleware for static files and API routes (except protected ones)
+    if (
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/favicon.ico') ||
+        pathname.includes('.')
+    ) {
+        return NextResponse.next();
+    }
+
+    // Create Supabase client and refresh session
+    const { supabase, response } = await createMiddlewareClient(request);
+
+    // Get current user session
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    // Check if route requires protection
+    const requiredAccess = getRequiredRole(pathname);
+
+    // Public routes - no protection needed
+    if (!requiredAccess) {
+        return response;
+    }
+
+    // User not authenticated - redirect to login
+    if (!user) {
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    // Get user's role from profiles table
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    const userRole = (profile as { role: UserRole } | null)?.role ?? null;
+
+    // Check if user has required access
+    if (!hasAccess(userRole, requiredAccess)) {
+        // Redirect unauthorized users based on their role
+        if (!userRole || userRole === 'customer') {
+            // Customers go to homepage
+            return NextResponse.redirect(new URL('/', request.url));
+        }
+        if (userRole === 'manager' && requiredAccess === 'director') {
+            // Managers trying to access admin routes go to dashboard
+            return NextResponse.redirect(new URL('/dashboard', request.url));
+        }
+        // Default: redirect to login
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    return response;
+}
+
+/**
+ * Configure which routes the middleware should run on
+ */
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - public folder
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
+};
