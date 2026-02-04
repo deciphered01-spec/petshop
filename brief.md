@@ -81,6 +81,3 @@ Reporting
 Automated generation of Weekly, Monthly, and Yearly PDF reports covering sales volume and inventory movement.
 Security
 Role-Based Access Control (RBAC) is strict. Operations Managers cannot view overall Business Profit/Loss; only Inventory data.
-
-
-

@@ -1,0 +1,1370 @@
+﻿
+> petshop@0.1.0 build
+> next build
+
+node.exe : ΓÜá Warning: 
+Next.js inferred your 
+workspace root, but it may 
+not be correct.
+At line:1 char:1
++ & "C:\Program Files 
+(x86)\nodejs/node.exe" 
+"C:\Program Files (x86)\no 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+ : N    otSpecified: (ΓÜá 
+Warning:     Ne...not be 
+correct.:String    ) [], 
+RemoteException
+    + 
+FullyQualifiedErrorId : N  
+  ativeCommandError
+ 
+ We detected multiple 
+lockfiles and selected the 
+directory of 
+C:\Users\Hp\pnpm-lock.yaml 
+as the root directory.
+ To silence this warning, 
+set `turbopack.root` in 
+your Next.js config, or 
+consider removing one of 
+the lockfiles if it's not 
+needed.
+   See https://nextjs.org/d
+ocs/app/api-reference/confi
+g/next-config-js/turbopack#
+root-directory for more 
+information.
+ Detected additional 
+lockfiles: 
+   * C:\Users\Hp\petshop\pn
+pm-lock.yaml
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+ΓÜá The "middleware" file 
+convention is deprecated. 
+Please use "proxy" 
+instead. Learn more: https:
+//nextjs.org/docs/messages/
+middleware-to-proxy
+  Creating an optimized production build ...
+Error: Can't resolve 
+'tw-animate-css' in 
+'C:\Users\Hp\petshop\app'
+    [2m[at 
+finishWithoutResolve (C:\Us
+ers\Hp\petshop\node_modules
+\enhanced-resolve\lib\Resol
+ver.js:586:18)][0m
+    [2m[at C:\Users\Hp\pet
+shop\node_modules\enhanced-
+resolve\lib\Resolver.js:678
+:14][0m
+    [2m[at C:\Users\Hp\pet
+shop\node_modules\enhanced-
+resolve\lib\Resolver.js:739
+:5][0m
+    [2m[at eval (eval at 
+create (C:\Users\Hp\petshop
+\node_modules\tapable\lib\H
+ookCodeFactory.js:31:10), 
+<anonymous>:15:1)][0m
+    [2m[at C:\Users\Hp\pet
+shop\node_modules\enhanced-
+resolve\lib\Resolver.js:739
+:5][0m
+    [2m[at eval (eval at 
+create (C:\Users\Hp\petshop
+\node_modules\tapable\lib\H
+ookCodeFactory.js:31:10), 
+<anonymous>:27:1)][0m
+    [2m[at C:\Users\Hp\pet
+shop\node_modules\enhanced-
+resolve\lib\DescriptionFile
+Plugin.js:89:43][0m
+    [2m[at C:\Users\Hp\pet
+shop\node_modules\enhanced-
+resolve\lib\Resolver.js:739
+:5][0m
+    [2m[at eval (eval at 
+create (C:\Users\Hp\petshop
+\node_modules\tapable\lib\H
+ookCodeFactory.js:31:10), 
+<anonymous>:15:1)][0m
+    [2m[at C:\Users\Hp\pet
+shop\node_modules\enhanced-
+resolve\lib\Resolver.js:739
+:5][0m {
+  details: "resolve 
+'tw-animate-css' in 'C:\\Us
+ers\\Hp\\petshop\\app'\n" +
+    '  Parsed request is a 
+module\n' +
+    '  using description 
+file: C:\\Users\\Hp\\petsho
+p\\package.json (relative 
+path: ./app)\n' +
+    '    resolve as 
+module\n' +
+    "      C:\\Users\\Hp\\p
+etshop\\app\\node_modules 
+doesn't exist or is not a 
+directory\n" +
+    '      looking for 
+modules in C:\\Users\\Hp\\p
+etshop\\node_modules\n' +
+    '        single file 
+module\n' +
+    '          using 
+description file: C:\\Users
+\\Hp\\petshop\\package.json
+ (relative path: ./node_mod
+ules/tw-animate-css)\n' +
+    '            no 
+extension\n' +
+    "              C:\\User
+s\\Hp\\petshop\\node_module
+s\\tw-animate-css doesn't 
+exist\n" +
+    '            .css\n' +
+    "              C:\\User
+s\\Hp\\petshop\\node_module
+s\\tw-animate-css.css 
+doesn't exist\n" +
+    "        C:\\Users\\Hp\
+\petshop\\node_modules\\tw-
+animate-css doesn't 
+exist\n" +
+    "      C:\\Users\\Hp\\n
+ode_modules doesn't exist 
+or is not a directory\n" +
+    "      
+C:\\Users\\node_modules 
+doesn't exist or is not a 
+directory\n" +
+    "      
+C:\\node_modules doesn't 
+exist or is not a 
+directory"
+}
+
+> Build error occurred
+Error: Turbopack build 
+failed with 10 errors:
+./petshop/app/globals.css
+Error evaluating Node.js 
+code
+CssSyntaxError: 
+tailwindcss: C:\Users\Hp\pe
+tshop\app\globals.css:1:1: 
+Can't resolve 
+'tw-animate-css' in 
+'C:\Users\Hp\petshop\app'
+    at Input.error (petshop
+/node_modules/postcss/lib/i
+nput.js:135:16) [C:\Users\H
+p\petshop\.next\build\chunk
+s\246fe_ad8745fd._.js:4651:
+22]
+    at Root.error (petshop/
+node_modules/postcss/lib/no
+de.js:146:32) [C:\Users\Hp\
+petshop\.next\build\chunks\
+246fe_ad8745fd._.js:928:38]
+    [at Object.Once (C:\Use
+rs\Hp\petshop\node_modules\
+@tailwindcss\postcss\dist\i
+ndex.js:10:6911)]
+    [at process.processTick
+sAndRejections (node:intern
+al/process/task_queues:103:
+5)]
+    at async 
+LazyResult.runAsync (petsho
+p/node_modules/postcss/lib/
+lazy-result.js:293:11) [C:\
+Users\Hp\petshop\.next\buil
+d\chunks\246fe_ad8745fd._.j
+s:6206:21]
+    at async transform (tur
+bopack:///[turbopack-node]/
+transforms/postcss.ts:70:34
+) [C:\Users\Hp\petshop\.nex
+t\build\chunks\[root-of-the
+-server]__438fe18c._.js:146
+:36]
+    at async run (turbopack
+:///[turbopack-node]/ipc/ev
+aluate.ts:92:23) [C:\Users\
+Hp\petshop\.next\build\chun
+ks\[root-of-the-server]__65
+b2987f._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    
+./petshop/app/globals.css 
+[Client Component Browser]
+    
+./petshop/app/layout.tsx 
+[Server Component]
+
+
+./petshop/components/ui/bad
+ge.tsx:2:1
+Module not found: Can't 
+resolve 
+'@radix-ui/react-slot'
+[0m [90m 1 |[39m 
+[36mimport[39m 
+[33m*[39m [36mas[39m 
+[33mReact[39m 
+[36mfrom[39m 
+[32m'react'[39m
+[31m[1m>[22m[39m[90m 
+2 |[39m [36mimport[39m 
+{ [33mSlot[39m } 
+[36mfrom[39m [32m'@radix
+-ui/react-slot'[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m
+ [90m 3 |[39m 
+[36mimport[39m { 
+cva[33m,[39m type 
+[33mVariantProps[39m } 
+[36mfrom[39m [32m'class-
+variance-authority'[39m
+ [90m 4 |[39m
+ [90m 5 |[39m 
+[36mimport[39m { cn } 
+[36mfrom[39m 
+[32m'@/lib/utils'[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/components/ui
+/badge.tsx [Client 
+Component Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/components/ui
+/badge.tsx [Client 
+Component SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/components/ui/but
+ton.tsx:2:1
+Module not found: Can't 
+resolve 
+'@radix-ui/react-slot'
+[0m [90m 1 |[39m 
+[36mimport[39m 
+[33m*[39m [36mas[39m 
+[33mReact[39m 
+[36mfrom[39m 
+[32m'react'[39m
+[31m[1m>[22m[39m[90m 
+2 |[39m [36mimport[39m 
+{ [33mSlot[39m } 
+[36mfrom[39m [32m'@radix
+-ui/react-slot'[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m
+ [90m 3 |[39m 
+[36mimport[39m { 
+cva[33m,[39m type 
+[33mVariantProps[39m } 
+[36mfrom[39m [32m'class-
+variance-authority'[39m
+ [90m 4 |[39m
+ [90m 5 |[39m 
+[36mimport[39m { cn } 
+[36mfrom[39m 
+[32m'@/lib/utils'[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/components/ui
+/button.tsx [Client 
+Component Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/components/ui
+/button.tsx [Client 
+Component SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/app/layout.tsx:3:
+1
+Module not found: Can't 
+resolve 
+'@vercel/analytics/next'
+[0m [90m 1 |[39m 
+[36mimport[39m type { 
+[33mMetadata[39m } 
+[36mfrom[39m 
+[32m'next'[39m
+ [90m 2 |[39m 
+[36mimport[39m { 
+[33mGeist[39m[33m,[39m 
+[33mGeist_Mono[39m } 
+[36mfrom[39m [32m'next/f
+ont/google'[39m
+[31m[1m>[22m[39m[90m 
+3 |[39m [36mimport[39m 
+{ [33mAnalytics[39m } 
+[36mfrom[39m [32m'@verce
+l/analytics/next'[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m
+ [90m 4 |[39m 
+[36mimport[39m 
+[32m'./globals.css'[39m
+ [90m 5 |[39m
+ [90m 6 |[39m 
+[36mconst[39m _geist 
+[33m=[39m 
+[33mGeist[39m({ 
+subsets[33m:[39m 
+[[32m"latin"[39m] 
+})[33m;[39m[0m
+
+
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/components/ui/bad
+ge.tsx:3:1
+Module not found: Can't 
+resolve 
+'class-variance-authority'
+[0m [90m 1 |[39m 
+[36mimport[39m 
+[33m*[39m [36mas[39m 
+[33mReact[39m 
+[36mfrom[39m 
+[32m'react'[39m
+ [90m 2 |[39m 
+[36mimport[39m { 
+[33mSlot[39m } 
+[36mfrom[39m [32m'@radix
+-ui/react-slot'[39m
+[31m[1m>[22m[39m[90m 
+3 |[39m [36mimport[39m 
+{ cva[33m,[39m type 
+[33mVariantProps[39m } 
+[36mfrom[39m [32m'class-
+variance-authority'[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m
+ [90m 4 |[39m
+ [90m 5 |[39m 
+[36mimport[39m { cn } 
+[36mfrom[39m 
+[32m'@/lib/utils'[39m
+ [90m 6 |[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/components/ui
+/badge.tsx [Client 
+Component Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/components/ui
+/badge.tsx [Client 
+Component SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/components/ui/but
+ton.tsx:3:1
+Module not found: Can't 
+resolve 
+'class-variance-authority'
+[0m [90m 1 |[39m 
+[36mimport[39m 
+[33m*[39m [36mas[39m 
+[33mReact[39m 
+[36mfrom[39m 
+[32m'react'[39m
+ [90m 2 |[39m 
+[36mimport[39m { 
+[33mSlot[39m } 
+[36mfrom[39m [32m'@radix
+-ui/react-slot'[39m
+[31m[1m>[22m[39m[90m 
+3 |[39m [36mimport[39m 
+{ cva[33m,[39m type 
+[33mVariantProps[39m } 
+[36mfrom[39m [32m'class-
+variance-authority'[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m
+ [90m 4 |[39m
+ [90m 5 |[39m 
+[36mimport[39m { cn } 
+[36mfrom[39m 
+[32m'@/lib/utils'[39m
+ [90m 6 |[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/components/ui
+/button.tsx [Client 
+Component Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/components/ui
+/button.tsx [Client 
+Component SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/src/components/st
+orefront/CartSidebar.tsx:3:
+1
+Module not found: Can't 
+resolve 'lucide-react'
+[0m [90m 1 |[39m 
+[32m"use 
+client"[39m[33m;[39m
+ [90m 2 |[39m
+[31m[1m>[22m[39m[90m 
+3 |[39m [36mimport[39m 
+{ [33mX[39m[33m,[39m 
+[33mMinus[39m[33m,[39m 
+[33mPlus[39m[33m,[39m 
+[33mShoppingBag[39m[33m,
+[39m [33mTrash2[39m[33m,
+[39m [33mPackage[39m } 
+[36mfrom[39m [32m"lucide
+-react"[39m[33m;[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m
+ [90m 4 |[39m 
+[36mimport[39m { 
+[33mButton[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/button"[39m[33m
+;[39m
+ [90m 5 |[39m 
+[36mimport[39m { 
+[33mBadge[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/badge"[39m[33m;
+[39m
+ [90m 6 |[39m 
+[36mimport[39m { 
+formatCurrency[33m,[39m 
+type [33mCartItem[39m } 
+[36mfrom[39m [32m"@/lib/
+mock-data"[39m[33m;[39m
+[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/src/component
+s/storefront/CartSidebar.ts
+x [Client Component 
+Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/src/component
+s/storefront/CartSidebar.ts
+x [Client Component SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/src/components/st
+orefront/CheckoutModal.tsx:
+7:1
+Module not found: Can't 
+resolve 'lucide-react'
+[0m [90m  5 |[39m 
+[36mimport[39m { 
+useState } [36mfrom[39m 
+[32m"react"[39m[33m;[39m
+ [90m  6 |[39m 
+[36mimport[39m 
+[33mImage[39m 
+[36mfrom[39m [32m"next/i
+mage"[39m[33m;[39m
+[31m[1m>[22m[39m[90m  
+7 |[39m [36mimport[39m {
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m
+[31m[1m>[22m[39m[90m  
+8 |[39m   
+[33mX[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m  
+9 |[39m   [33mCreditCard
+[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+10 |[39m   [33mBuilding2
+[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+11 |[39m   [33mSmartphone
+[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+12 |[39m   [33mCheckCircl
+e[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+13 |[39m   [33mLoader2[3
+9m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+14 |[39m   [33mArrowLeft
+[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+15 |[39m   [33mPackage[3
+9m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+16 |[39m   
+[33mMapPin[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+17 |[39m   
+[33mUser[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+18 |[39m   
+[33mMail[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+19 |[39m   
+[33mPhone[39m[33m,[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m
+[31m[1m>[22m[39m[90m 
+20 |[39m } [36mfrom[39m 
+[32m"lucide-react"[39m[3
+3m;[39m
+ [90m    |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m
+ [90m 21 |[39m 
+[36mimport[39m { 
+[33mButton[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/button"[39m[33m
+;[39m
+ [90m 22 |[39m 
+[36mimport[39m { 
+[33mInput[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/input"[39m[33m;
+[39m
+ [90m 23 |[39m 
+[36mimport[39m { 
+[33mBadge[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/badge"[39m[33m;
+[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/src/component
+s/storefront/CheckoutModal.
+tsx [Client Component 
+Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/src/component
+s/storefront/CheckoutModal.
+tsx [Client Component SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/src/components/st
+orefront/CustomerStorefront
+.tsx:5:1
+Module not found: Can't 
+resolve 'lucide-react'
+[0m [90m 3 |[39m 
+[36mimport[39m { 
+useState } [36mfrom[39m 
+[32m"react"[39m[33m;[39m
+ [90m 4 |[39m 
+[36mimport[39m 
+[33mImage[39m 
+[36mfrom[39m [32m"next/i
+mage"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 
+5 |[39m [36mimport[39m 
+{ [33mSearch[39m[33m,[3
+9m [33mShoppingCart[39m[
+33m,[39m 
+[33mStar[39m[33m,[39m 
+[33mHeart[39m[33m,[39m 
+[33mPackage[39m } 
+[36mfrom[39m [32m"lucide
+-react"[39m[33m;[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m
+ [90m 6 |[39m 
+[36mimport[39m { 
+[33mButton[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/button"[39m[33m
+;[39m
+ [90m 7 |[39m 
+[36mimport[39m { 
+[33mInput[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/input"[39m[33m;
+[39m
+ [90m 8 |[39m 
+[36mimport[39m { 
+[33mCard[39m[33m,[39m 
+[33mCardContent[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/card"[39m[33m;
+[39m[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+./petshop/src/components/st
+orefront/ProductDetailModal
+.tsx:5:1
+Module not found: Can't 
+resolve 'lucide-react'
+[0m [90m 3 |[39m 
+[36mimport[39m { 
+useState } [36mfrom[39m 
+[32m"react"[39m[33m;[39m
+ [90m 4 |[39m 
+[36mimport[39m 
+[33mImage[39m 
+[36mfrom[39m [32m"next/i
+mage"[39m[33m;[39m
+[31m[1m>[22m[39m[90m 
+5 |[39m [36mimport[39m 
+{ [33mX[39m[33m,[39m 
+[33mStar[39m[33m,[39m 
+[33mMinus[39m[33m,[39m 
+[33mPlus[39m[33m,[39m 
+[33mShoppingCart[39m[33m,
+[39m 
+[33mHeart[39m[33m,[39m 
+[33mCheck[39m[33m,[39m 
+[33mTruck[39m[33m,[39m 
+[33mShield[39m[33m,[39m
+ [33mPackage[39m } 
+[36mfrom[39m [32m"lucide
+-react"[39m[33m;[39m
+ [90m   |[39m [31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1m^[2
+2m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[39m[3
+1m[1m^[22m[39m
+ [90m 6 |[39m 
+[36mimport[39m { 
+[33mButton[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/button"[39m[33m
+;[39m
+ [90m 7 |[39m 
+[36mimport[39m { 
+[33mBadge[39m } 
+[36mfrom[39m [32m"@/comp
+onents/ui/badge"[39m[33m;
+[39m
+ [90m 8 |[39m 
+[36mimport[39m type { 
+[33mProduct[39m } 
+[36mfrom[39m [32m"@/lib/
+mock-data"[39m[33m;[39m
+[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./petshop/src/component
+s/storefront/ProductDetailM
+odal.tsx [Client Component 
+Browser]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+Browser]
+    ./petshop/app/page.tsx 
+[Client Component Browser]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./petshop/src/component
+s/storefront/ProductDetailM
+odal.tsx [Client Component 
+SSR]
+    ./petshop/src/component
+s/storefront/CustomerStoref
+ront.tsx [Client Component 
+SSR]
+    ./petshop/app/page.tsx 
+[Client Component SSR]
+    ./petshop/app/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs/mes
+sages/module-not-found
+
+
+    at async transform (tur
+bopack:///[turbopack-node]/
+transforms/postcss.ts:70:34
+) [C:\Users\Hp\petshop\.nex
+t\build\chunks\[root-of-the
+-server]__438fe18c._.js:146
+:36])
+    at async run (turbopack
+:///[turbopack-node]/ipc/ev
+aluate.ts:92:23) [C:\Users\
+Hp\petshop\.next\build\chun
+ks\[root-of-the-server]__65
+b2987f._.js:443:31])
+    at <unknown> (./petshop
+/components/ui/badge.tsx:2:
+1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/components/ui/button.tsx:2
+:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/app/layout.tsx:3:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/components/ui/badge.tsx:3:
+1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/components/ui/button.tsx:3
+:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/src/components/storefront/
+CartSidebar.tsx:3:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/src/components/storefront/
+CheckoutModal.tsx:7:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/src/components/storefront/
+CustomerStorefront.tsx:5:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)
+    at <unknown> (./petshop
+/src/components/storefront/
+ProductDetailModal.tsx:5:1)
+    at <unknown> (https://n
+extjs.org/docs/messages/mod
+ule-not-found)

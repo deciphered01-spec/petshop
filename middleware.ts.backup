@@ -58,6 +58,14 @@ function hasAccess(userRole: UserRole | null, required: 'director' | 'staff' | '
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    // TEMPORARY: Allow all access for development/testing
+    // TODO: Remove this when ready to implement real authentication
+    // For now, any login will work and grant access to all routes
+    const isDevelopmentBypass = true;
+    if (isDevelopmentBypass) {
+        return NextResponse.next();
+    }
+
     // Skip middleware for static files and API routes (except protected ones)
     if (
         pathname.startsWith('/_next') ||
