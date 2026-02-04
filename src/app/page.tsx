@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Store, BarChart3, Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CustomerStorefront } from "@/components/storefront/CustomerStorefront";
 import { DirectorDashboard } from "@/components/dashboard/DirectorDashboard";
@@ -23,6 +25,13 @@ export default function Home() {
             />
             <span className="hidden text-sm font-medium text-slate-500 sm:inline">|</span>
             <span className="hidden text-sm text-slate-600 sm:inline">Demo Mode</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="ghost" className="text-slate-600 hover:text-slate-900">
+                Sign In
+              </Button>
+            </Link>
           </div>
           <TabsList className="bg-slate-100">
             <TabsTrigger value="storefront" className="gap-2 data-[state=active]:bg-white">

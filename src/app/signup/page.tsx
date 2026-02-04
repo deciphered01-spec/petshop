@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowLeft, Loader2 } from "lucide-react";
+import { Mail, Lock, ArrowLeft, Loader2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+export default function SignupPage() {
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -18,15 +19,20 @@ export default function LoginPage() {
     const router = useRouter();
     const supabase = createClient();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: {
+                        full_name: name,
+                    },
+                },
             });
 
             if (error) {
@@ -34,6 +40,7 @@ export default function LoginPage() {
                 return;
             }
 
+            // In a real app, you might check for session/user confirmation
             router.push("/dashboard");
         } catch (err) {
             setError("An unexpected error occurred");
@@ -42,7 +49,7 @@ export default function LoginPage() {
         }
     };
 
-    const handleGoogleLogin = async () => {
+    const handleGoogleSignup = async () => {
         try {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: "google",
@@ -52,7 +59,7 @@ export default function LoginPage() {
             });
             if (error) setError(error.message);
         } catch (err) {
-            setError("An unexpected error occurred with Google login");
+            setError("An unexpected error occurred with Google signup");
         }
     };
 
@@ -60,17 +67,17 @@ export default function LoginPage() {
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left: Decorative */}
             <div className="hidden lg:block relative bg-slate-900">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/40 to-slate-900/40 mix-blend-overlay" />
-                <div className="absolute inset-0 bg-[url('/products/holland-lop.jpg')] bg-cover bg-center opacity-30" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-slate-900/40 mix-blend-overlay" />
+                <div className="absolute inset-0 bg-[url('/products/rabbit-pellets.jpg')] bg-cover bg-center opacity-30" />
                 <div className="relative h-full flex flex-col justify-between p-12 text-white">
                     <Link href="/" className="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
                         <ArrowLeft className="h-4 w-4" />
                         Back to Store
                     </Link>
                     <div>
-                        <h1 className="text-4xl font-bold mb-4">Welcome Back</h1>
+                        <h1 className="text-4xl font-bold mb-4">Join PetShop</h1>
                         <p className="text-lg text-slate-300 max-w-md">
-                            Sign in to access your dashboard, manage orders, and track your business growth.
+                            Create an account to track orders, save your favorite products, and get exclusive offers.
                         </p>
                     </div>
                 </div>
@@ -85,15 +92,15 @@ export default function LoginPage() {
                 >
                     <Card className="border-slate-200 dark:border-slate-800 shadow-xl">
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
+                            <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
                             <CardDescription>
-                                Choose your preferred sign in method
+                                Enter your details to get started
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-4">
                             <Button
                                 variant="outline"
-                                onClick={handleGoogleLogin}
+                                onClick={handleGoogleSignup}
                                 className="w-full py-6 flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200"
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -114,7 +121,7 @@ export default function LoginPage() {
                                         fill="#EA4335"
                                     />
                                 </svg>
-                                Sign in with Google
+                                Sign up with Google
                             </Button>
 
                             <div className="relative">
@@ -123,12 +130,26 @@ export default function LoginPage() {
                                 </div>
                                 <div className="relative flex justify-center text-xs uppercase">
                                     <span className="bg-white dark:bg-slate-950 px-2 text-muted-foreground">
-                                        Or continue with
+                                        Or continue with email
                                     </span>
                                 </div>
                             </div>
 
-                            <form onSubmit={handleLogin} className="grid gap-4">
+                            <form onSubmit={handleSignup} className="grid gap-4">
+                                <div className="grid gap-2">
+                                    <label htmlFor="name" className="text-sm font-medium">Full Name</label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                        <Input
+                                            id="name"
+                                            placeholder="John Doe"
+                                            className="pl-9"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                </div>
                                 <div className="grid gap-2">
                                     <label htmlFor="email" className="text-sm font-medium">Email</label>
                                     <div className="relative">
@@ -169,17 +190,17 @@ export default function LoginPage() {
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Signing in...
+                                            Creating account...
                                         </>
-                                    ) : "Sign In"}
+                                    ) : "Create Account"}
                                 </Button>
                             </form>
                         </CardContent>
                         <CardFooter>
                             <div className="text-center text-sm w-full text-slate-600 dark:text-slate-400">
-                                Don't have an account?{" "}
-                                <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
-                                    Sign up
+                                Already have an account?{" "}
+                                <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+                                    Sign in
                                 </Link>
                             </div>
                         </CardFooter>

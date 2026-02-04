@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react"
-
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   X,
@@ -22,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, type CartItem } from "@/lib/mock-data";
+import { nigeriaLocations } from "@/lib/nigeria-data";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -52,8 +51,17 @@ export function CheckoutModal({
     state: "",
   });
 
+  // Derived state for cities based on selected state
+  const cities = formData.state ? nigeriaLocations.cities[formData.state] || [] : [];
+
   const deliveryFee = subtotal >= 50000 ? 0 : 2500;
   const total = subtotal + deliveryFee;
+
+  useEffect(() => {
+    if (!isOpen) {
+      // Reset form on close if needed, but usually we keep it or reset on success
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -161,7 +169,7 @@ export function CheckoutModal({
                 {step === "details" ? (
                   <form onSubmit={handleSubmitDetails} className="space-y-4">
                     <h3 className="font-semibold text-slate-900">Delivery Information</h3>
-                    
+
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <Input
@@ -172,7 +180,7 @@ export function CheckoutModal({
                         required
                       />
                     </div>
-                    
+
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <Input
@@ -184,7 +192,7 @@ export function CheckoutModal({
                         required
                       />
                     </div>
-                    
+
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <Input
@@ -195,7 +203,7 @@ export function CheckoutModal({
                         required
                       />
                     </div>
-                    
+
                     <div className="relative">
                       <MapPin className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                       <textarea
@@ -207,20 +215,42 @@ export function CheckoutModal({
                         required
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-3">
-                      <Input
-                        placeholder="City"
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        required
-                      />
-                      <Input
-                        placeholder="State"
-                        value={formData.state}
-                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                        required
-                      />
+                      <div className="space-y-1">
+                        <select
+                          value={formData.state}
+                          onChange={(e) => {
+                            setFormData({ ...formData, state: e.target.value, city: "" });
+                          }}
+                          className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          required
+                        >
+                          <option value="">Select State</option>
+                          {nigeriaLocations.states.map((state) => (
+                            <option key={state} value={state}>
+                              {state}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <select
+                          value={formData.city}
+                          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                          className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          required
+                          disabled={!formData.state}
+                        >
+                          <option value="">Select City</option>
+                          {cities.map((city) => (
+                            <option key={city} value={city}>
+                              {city}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
                     <Button type="submit" className="w-full bg-emerald-600 text-white hover:bg-emerald-700">
@@ -230,7 +260,7 @@ export function CheckoutModal({
                 ) : (
                   <div className="space-y-4">
                     <h3 className="font-semibold text-slate-900">Select Payment Method</h3>
-                    
+
                     <div className="space-y-3">
                       {paymentMethods.map((method) => {
                         const Icon = method.icon;
@@ -239,21 +269,18 @@ export function CheckoutModal({
                             key={method.id}
                             type="button"
                             onClick={() => setPaymentMethod(method.id)}
-                            className={`flex w-full items-center gap-4 rounded-xl border-2 p-4 text-left transition-colors ${
-                              paymentMethod === method.id
+                            className={`flex w-full items-center gap-4 rounded-xl border-2 p-4 text-left transition-colors ${paymentMethod === method.id
                                 ? "border-emerald-500 bg-emerald-50"
                                 : "border-slate-200 hover:border-slate-300"
-                            }`}
+                              }`}
                           >
                             <div
-                              className={`rounded-lg p-2 ${
-                                paymentMethod === method.id ? "bg-emerald-100" : "bg-slate-100"
-                              }`}
+                              className={`rounded-lg p-2 ${paymentMethod === method.id ? "bg-emerald-100" : "bg-slate-100"
+                                }`}
                             >
                               <Icon
-                                className={`h-5 w-5 ${
-                                  paymentMethod === method.id ? "text-emerald-600" : "text-slate-500"
-                                }`}
+                                className={`h-5 w-5 ${paymentMethod === method.id ? "text-emerald-600" : "text-slate-500"
+                                  }`}
                               />
                             </div>
                             <div className="flex-1">
@@ -294,7 +321,7 @@ export function CheckoutModal({
               {/* Order Summary */}
               <div className="bg-slate-50 p-6 md:col-span-2">
                 <h3 className="font-semibold text-slate-900">Order Summary</h3>
-                
+
                 <div className="mt-4 space-y-3">
                   {items.map((item) => (
                     <div key={item.product.id} className="flex gap-3">

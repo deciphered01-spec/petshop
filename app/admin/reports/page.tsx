@@ -6,9 +6,7 @@ import { motion } from "framer-motion";
 import {
     FileText,
     Download,
-    Calendar,
     ArrowLeft,
-    Filter,
     TrendingUp,
     DollarSign,
     Package,
@@ -19,6 +17,8 @@ import {
     ChevronRight,
     Clock,
     CheckCircle,
+    Moon,
+    Sun,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,13 +70,39 @@ const recentReports = [
 export default function ReportsPage() {
     const [selectedReport, setSelectedReport] = useState<string | null>(null);
     const [dateRange, setDateRange] = useState({ from: "", to: "" });
+    const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+    const isDark = theme === "dark";
+
+    const themeClasses = {
+        bg: isDark
+            ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
+            : "bg-gradient-to-br from-slate-50 via-white to-slate-100",
+        header: isDark
+            ? "border-white/10 bg-slate-900/80"
+            : "border-slate-200 bg-white/90",
+        text: isDark ? "text-white" : "text-slate-900",
+        textMuted: isDark ? "text-slate-400" : "text-slate-600",
+        card: isDark
+            ? "border-white/10 bg-white/5 backdrop-blur-sm"
+            : "border-slate-200 bg-white shadow-sm",
+        cardHover: isDark ? "hover:bg-white/10" : "hover:bg-slate-50",
+        input: isDark
+            ? "bg-white/5 border-white/10 text-white"
+            : "bg-white border-slate-200 text-slate-900",
+        buttonOutline: isDark
+            ? "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900",
+        iconContainer: isDark ? "bg-slate-800" : "bg-slate-100",
+        rowHover: isDark ? "hover:bg-white/5" : "hover:bg-slate-50",
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className={`min-h-screen transition-colors duration-300 ${themeClasses.bg}`}>
             {/* Ambient effects */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl" />
+                <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-emerald-500/10" : "bg-emerald-500/5"}`} />
+                <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-violet-500/10" : "bg-violet-500/5"}`} />
             </div>
 
             <div className="relative z-10">
@@ -84,20 +110,28 @@ export default function ReportsPage() {
                 <motion.header
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/80 backdrop-blur-xl"
+                    className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors ${themeClasses.header}`}
                 >
                     <div className="flex h-16 items-center justify-between px-6">
                         <div className="flex items-center gap-4">
                             <Link href="/admin">
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hover:bg-white/10">
+                                <Button variant="ghost" size="icon" className={themeClasses.buttonOutline}>
                                     <ArrowLeft className="h-5 w-5" />
                                 </Button>
                             </Link>
                             <div>
-                                <h1 className="text-lg font-bold text-white">Generate Reports</h1>
-                                <p className="text-xs text-slate-400">Create and download business reports</p>
+                                <h1 className={`text-lg font-bold ${themeClasses.text}`}>Generate Reports</h1>
+                                <p className={`text-xs ${themeClasses.textMuted}`}>Create and download business reports</p>
                             </div>
                         </div>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setTheme(isDark ? "light" : "dark")}
+                            className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${isDark ? "bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900"}`}
+                        >
+                            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        </motion.button>
                     </div>
                 </motion.header>
 
@@ -108,7 +142,7 @@ export default function ReportsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="mb-8"
                     >
-                        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Select Report Type</h2>
+                        <h2 className={`text-sm font-semibold uppercase tracking-wider mb-4 ${themeClasses.textMuted}`}>Select Report Type</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {reportTypes.map((report, index) => {
                                 const Icon = report.icon;
@@ -122,15 +156,15 @@ export default function ReportsPage() {
                                         onClick={() => setSelectedReport(report.id)}
                                     >
                                         <Card className={`cursor-pointer transition-all duration-300 ${selectedReport === report.id
-                                                ? "border-emerald-500/50 bg-emerald-500/10 ring-1 ring-emerald-500/50"
-                                                : "border-white/10 bg-white/5 hover:bg-white/10"
+                                            ? "border-emerald-500/50 bg-emerald-500/10 ring-1 ring-emerald-500/50"
+                                            : `${themeClasses.card} ${themeClasses.cardHover}`
                                             }`}>
                                             <CardContent className="p-6">
                                                 <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${report.gradient} mb-4`}>
                                                     <Icon className="h-6 w-6 text-white" />
                                                 </div>
-                                                <h3 className="font-semibold text-white mb-1">{report.title}</h3>
-                                                <p className="text-sm text-slate-400 mb-3">{report.description}</p>
+                                                <h3 className={`font-semibold mb-1 ${themeClasses.text}`}>{report.title}</h3>
+                                                <p className={`text-sm mb-3 ${themeClasses.textMuted}`}>{report.description}</p>
                                                 <div className="flex items-center text-xs text-slate-500">
                                                     <Clock className="h-3 w-3 mr-1" />
                                                     Last: {report.lastGenerated}
@@ -150,29 +184,29 @@ export default function ReportsPage() {
                             animate={{ opacity: 1, y: 0 }}
                             className="mb-8"
                         >
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                                <CardHeader className="border-b border-white/10">
-                                    <CardTitle className="text-white">Configure Report</CardTitle>
-                                    <CardDescription className="text-slate-400">Set parameters for your report</CardDescription>
+                            <Card className={themeClasses.card}>
+                                <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
+                                    <CardTitle className={themeClasses.text}>Configure Report</CardTitle>
+                                    <CardDescription className={themeClasses.textMuted}>Set parameters for your report</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-2">From Date</label>
+                                            <label className={`block text-sm font-medium mb-2 ${themeClasses.textMuted}`}>From Date</label>
                                             <Input
                                                 type="date"
                                                 value={dateRange.from}
                                                 onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
-                                                className="bg-white/5 border-white/10 text-white"
+                                                className={themeClasses.input}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-2">To Date</label>
+                                            <label className={`block text-sm font-medium mb-2 ${themeClasses.textMuted}`}>To Date</label>
                                             <Input
                                                 type="date"
                                                 value={dateRange.to}
                                                 onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
-                                                className="bg-white/5 border-white/10 text-white"
+                                                className={themeClasses.input}
                                             />
                                         </div>
                                         <div className="flex items-end gap-3">
@@ -183,22 +217,22 @@ export default function ReportsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="mt-6 pt-6 border-t border-white/10">
-                                        <h4 className="text-sm font-medium text-slate-400 mb-4">Export Options</h4>
+                                    <div className={`mt-6 pt-6 border-t ${isDark ? "border-white/10" : "border-slate-200"}`}>
+                                        <h4 className={`text-sm font-medium mb-4 ${themeClasses.textMuted}`}>Export Options</h4>
                                         <div className="flex gap-3">
-                                            <Button variant="outline" className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+                                            <Button variant="outline" className={themeClasses.buttonOutline}>
                                                 <FileSpreadsheet className="mr-2 h-4 w-4" />
                                                 Excel
                                             </Button>
-                                            <Button variant="outline" className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+                                            <Button variant="outline" className={themeClasses.buttonOutline}>
                                                 <FileText className="mr-2 h-4 w-4" />
                                                 PDF
                                             </Button>
-                                            <Button variant="outline" className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+                                            <Button variant="outline" className={themeClasses.buttonOutline}>
                                                 <Printer className="mr-2 h-4 w-4" />
                                                 Print
                                             </Button>
-                                            <Button variant="outline" className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+                                            <Button variant="outline" className={themeClasses.buttonOutline}>
                                                 <Mail className="mr-2 h-4 w-4" />
                                                 Email
                                             </Button>
@@ -215,45 +249,45 @@ export default function ReportsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                     >
-                        <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                            <CardHeader className="border-b border-white/10">
+                        <Card className={themeClasses.card}>
+                            <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <CardTitle className="text-white">Recent Reports</CardTitle>
-                                        <CardDescription className="text-slate-400">Previously generated reports</CardDescription>
+                                        <CardTitle className={themeClasses.text}>Recent Reports</CardTitle>
+                                        <CardDescription className={themeClasses.textMuted}>Previously generated reports</CardDescription>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
+                                    <Button variant="ghost" size="sm" className={`${themeClasses.textMuted} hover:${themeClasses.text}`}>
                                         View All
                                         <ChevronRight className="ml-1 h-4 w-4" />
                                     </Button>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-0">
-                                <div className="divide-y divide-white/5">
+                                <div className={`divide-y ${isDark ? "divide-white/5" : "divide-slate-200"}`}>
                                     {recentReports.map((report, index) => (
                                         <motion.div
                                             key={index}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.4 + index * 0.1 }}
-                                            className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors cursor-pointer"
+                                            className={`flex items-center justify-between p-4 transition-colors cursor-pointer ${themeClasses.rowHover}`}
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800">
+                                                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${themeClasses.iconContainer}`}>
                                                     <FileText className="h-5 w-5 text-slate-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-white">{report.name}</p>
+                                                    <p className={`font-medium ${themeClasses.text}`}>{report.name}</p>
                                                     <p className="text-sm text-slate-500">{report.date}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4">
-                                                <Badge className="bg-slate-500/20 text-slate-400 border-0">{report.type}</Badge>
-                                                <Badge className="bg-emerald-500/20 text-emerald-400 border-0">
+                                                <Badge className={`border-0 ${isDark ? "bg-slate-500/20 text-slate-400" : "bg-slate-100 text-slate-600"}`}>{report.type}</Badge>
+                                                <Badge className={`border-0 ${isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600"}`}>
                                                     <CheckCircle className="mr-1 h-3 w-3" />
                                                     {report.status}
                                                 </Badge>
-                                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                                                <Button variant="ghost" size="icon" className={`${themeClasses.textMuted} hover:${themeClasses.text}`}>
                                                     <Download className="h-4 w-4" />
                                                 </Button>
                                             </div>

@@ -77,12 +77,37 @@ export default function SettingsPage() {
         reports: false,
     });
 
+    const isDark = theme === "dark";
+
+    const themeClasses = {
+        bg: isDark
+            ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
+            : "bg-gradient-to-br from-slate-50 via-white to-slate-100",
+        header: isDark
+            ? "border-white/10 bg-slate-900/80"
+            : "border-slate-200 bg-white/90",
+        text: isDark ? "text-white" : "text-slate-900",
+        textMuted: isDark ? "text-slate-400" : "text-slate-600",
+        card: isDark
+            ? "border-white/10 bg-white/5 backdrop-blur-sm"
+            : "border-slate-200 bg-white shadow-sm",
+        cardHover: isDark ? "hover:bg-white/10" : "hover:bg-slate-50",
+        navActive: isDark ? "bg-white/10 text-white" : "bg-slate-100 text-slate-900",
+        navInactive: isDark ? "text-slate-400 hover:bg-white/5 hover:text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+        input: isDark
+            ? "bg-white/5 border-white/10 text-white"
+            : "bg-white border-slate-200 text-slate-900",
+        buttonOutline: isDark
+            ? "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900",
+    };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className={`min-h-screen transition-colors duration-300 ${themeClasses.bg}`}>
             {/* Ambient effects */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+                <div className={`absolute top-0 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-violet-500/10" : "bg-violet-500/5"}`} />
+                <div className={`absolute bottom-0 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-emerald-500/10" : "bg-emerald-500/5"}`} />
             </div>
 
             <div className="relative z-10">
@@ -90,24 +115,34 @@ export default function SettingsPage() {
                 <motion.header
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/80 backdrop-blur-xl"
+                    className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors ${themeClasses.header}`}
                 >
                     <div className="flex h-16 items-center justify-between px-6">
                         <div className="flex items-center gap-4">
                             <Link href="/admin">
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hover:bg-white/10">
+                                <Button variant="ghost" size="icon" className={themeClasses.buttonOutline}>
                                     <ArrowLeft className="h-5 w-5" />
                                 </Button>
                             </Link>
                             <div>
-                                <h1 className="text-lg font-bold text-white">Settings</h1>
-                                <p className="text-xs text-slate-400">System configuration and preferences</p>
+                                <h1 className={`text-lg font-bold ${themeClasses.text}`}>Settings</h1>
+                                <p className={`text-xs ${themeClasses.textMuted}`}>System configuration and preferences</p>
                             </div>
                         </div>
-                        <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0">
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Changes
-                        </Button>
+                        <div className="flex items-center gap-3">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setTheme(isDark ? "light" : "dark")}
+                                className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${isDark ? "bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900"}`}
+                            >
+                                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                            </motion.button>
+                            <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0">
+                                <Save className="mr-2 h-4 w-4" />
+                                Save Changes
+                            </Button>
+                        </div>
                     </div>
                 </motion.header>
 
@@ -119,7 +154,7 @@ export default function SettingsPage() {
                             animate={{ opacity: 1, x: 0 }}
                             className="lg:col-span-1"
                         >
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm sticky top-24">
+                            <Card className={`${themeClasses.card} sticky top-24`}>
                                 <CardContent className="p-4">
                                     <nav className="space-y-1">
                                         {settingsSections.map((section, index) => {
@@ -132,8 +167,8 @@ export default function SettingsPage() {
                                                     transition={{ delay: index * 0.05 }}
                                                     onClick={() => setActiveSection(section.id)}
                                                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${activeSection === section.id
-                                                            ? "bg-white/10 text-white"
-                                                            : "text-slate-400 hover:bg-white/5 hover:text-white"
+                                                        ? themeClasses.navActive
+                                                        : themeClasses.navInactive
                                                         }`}
                                                 >
                                                     <div className={`p-2 rounded-lg bg-gradient-to-br ${section.gradient}`}>
@@ -160,26 +195,26 @@ export default function SettingsPage() {
                             className="lg:col-span-3 space-y-6"
                         >
                             {/* Appearance */}
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                                <CardHeader className="border-b border-white/10">
-                                    <CardTitle className="text-white flex items-center gap-2">
+                            <Card className={themeClasses.card}>
+                                <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
+                                    <CardTitle className={`flex items-center gap-2 ${themeClasses.text}`}>
                                         <Moon className="h-5 w-5 text-violet-400" />
                                         Appearance
                                     </CardTitle>
-                                    <CardDescription className="text-slate-400">Customize the look and feel</CardDescription>
+                                    <CardDescription className={themeClasses.textMuted}>Customize the look and feel</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-white font-medium">Theme</p>
-                                            <p className="text-sm text-slate-400">Select your preferred color scheme</p>
+                                            <p className={`font-medium ${themeClasses.text}`}>Theme</p>
+                                            <p className={`text-sm ${themeClasses.textMuted}`}>Select your preferred color scheme</p>
                                         </div>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setTheme("light")}
                                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${theme === "light"
-                                                        ? "bg-white text-slate-900"
-                                                        : "bg-white/5 text-slate-400 hover:bg-white/10"
+                                                    ? "bg-slate-100 text-slate-900 ring-2 ring-emerald-500"
+                                                    : (isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-50 text-slate-500 hover:bg-slate-100")
                                                     }`}
                                             >
                                                 <Sun className="h-4 w-4" />
@@ -189,8 +224,8 @@ export default function SettingsPage() {
                                             <button
                                                 onClick={() => setTheme("dark")}
                                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${theme === "dark"
-                                                        ? "bg-slate-700 text-white"
-                                                        : "bg-white/5 text-slate-400 hover:bg-white/10"
+                                                    ? "bg-slate-800 text-white ring-2 ring-emerald-500"
+                                                    : (isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-50 text-slate-500 hover:bg-slate-100")
                                                     }`}
                                             >
                                                 <Moon className="h-4 w-4" />
@@ -203,13 +238,13 @@ export default function SettingsPage() {
                             </Card>
 
                             {/* Notifications */}
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                                <CardHeader className="border-b border-white/10">
-                                    <CardTitle className="text-white flex items-center gap-2">
+                            <Card className={themeClasses.card}>
+                                <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
+                                    <CardTitle className={`flex items-center gap-2 ${themeClasses.text}`}>
                                         <Bell className="h-5 w-5 text-blue-400" />
                                         Notification Preferences
                                     </CardTitle>
-                                    <CardDescription className="text-slate-400">Choose how you want to be notified</CardDescription>
+                                    <CardDescription className={themeClasses.textMuted}>Choose how you want to be notified</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-4">
                                     {[
@@ -219,21 +254,21 @@ export default function SettingsPage() {
                                     ].map((item) => {
                                         const Icon = item.icon;
                                         return (
-                                            <div key={item.key} className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+                                            <div key={item.key} className={`flex items-center justify-between p-4 rounded-xl ${isDark ? "bg-white/5" : "bg-slate-50"}`}>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 rounded-lg bg-slate-800">
+                                                    <div className={`p-2 rounded-lg ${isDark ? "bg-slate-800" : "bg-white border border-slate-200"}`}>
                                                         <Icon className="h-4 w-4 text-slate-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-white font-medium">{item.label}</p>
-                                                        <p className="text-sm text-slate-500">{item.description}</p>
+                                                        <p className={`font-medium ${themeClasses.text}`}>{item.label}</p>
+                                                        <p className={`text-sm ${themeClasses.textMuted}`}>{item.description}</p>
                                                     </div>
                                                 </div>
                                                 <button
                                                     onClick={() => setNotifications({ ...notifications, [item.key]: !notifications[item.key as keyof typeof notifications] })}
                                                     className={`relative w-12 h-6 rounded-full transition-colors ${notifications[item.key as keyof typeof notifications]
-                                                            ? "bg-emerald-500"
-                                                            : "bg-slate-700"
+                                                        ? "bg-emerald-500"
+                                                        : "bg-slate-700"
                                                         }`}
                                                 >
                                                     <motion.div
@@ -251,42 +286,42 @@ export default function SettingsPage() {
                             </Card>
 
                             {/* Store Info */}
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                                <CardHeader className="border-b border-white/10">
-                                    <CardTitle className="text-white flex items-center gap-2">
+                            <Card className={themeClasses.card}>
+                                <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
+                                    <CardTitle className={`flex items-center gap-2 ${themeClasses.text}`}>
                                         <Store className="h-5 w-5 text-amber-400" />
                                         Store Information
                                     </CardTitle>
-                                    <CardDescription className="text-slate-400">Business details</CardDescription>
+                                    <CardDescription className={themeClasses.textMuted}>Business details</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-2">Store Name</label>
+                                            <label className={`block text-sm font-medium mb-2 ${themeClasses.textMuted}`}>Store Name</label>
                                             <Input
                                                 defaultValue="Baycarl Petshop"
-                                                className="bg-white/5 border-white/10 text-white"
+                                                className={themeClasses.input}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-2">Contact Email</label>
+                                            <label className={`block text-sm font-medium mb-2 ${themeClasses.textMuted}`}>Contact Email</label>
                                             <Input
                                                 defaultValue="contact@baycarl.com"
-                                                className="bg-white/5 border-white/10 text-white"
+                                                className={themeClasses.input}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-2">Phone Number</label>
+                                            <label className={`block text-sm font-medium mb-2 ${themeClasses.textMuted}`}>Phone Number</label>
                                             <Input
                                                 defaultValue="+234 812 345 6789"
-                                                className="bg-white/5 border-white/10 text-white"
+                                                className={themeClasses.input}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-400 mb-2">Currency</label>
+                                            <label className={`block text-sm font-medium mb-2 ${themeClasses.textMuted}`}>Currency</label>
                                             <Input
                                                 defaultValue="NGN (₦)"
-                                                className="bg-white/5 border-white/10 text-white"
+                                                className={themeClasses.input}
                                                 disabled
                                             />
                                         </div>

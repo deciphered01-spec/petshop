@@ -17,6 +17,8 @@ import {
     ArrowDownRight,
     Eye,
     Download,
+    Moon,
+    Sun,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,14 +51,35 @@ const analyticsData = {
 
 export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState("7d");
+    const [theme, setTheme] = useState<"dark" | "light">("dark");
     const maxRevenue = Math.max(...analyticsData.weeklyData.map(d => d.revenue));
 
+    const isDark = theme === "dark";
+
+    const themeClasses = {
+        bg: isDark
+            ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
+            : "bg-gradient-to-br from-slate-50 via-white to-slate-100",
+        header: isDark
+            ? "border-white/10 bg-slate-900/80"
+            : "border-slate-200 bg-white/90",
+        text: isDark ? "text-white" : "text-slate-900",
+        textMuted: isDark ? "text-slate-400" : "text-slate-600",
+        card: isDark
+            ? "border-white/10 bg-white/5 backdrop-blur-sm"
+            : "border-slate-200 bg-white shadow-sm",
+        cardHover: isDark ? "hover:bg-white/10" : "hover:bg-slate-50",
+        buttonOutline: isDark
+            ? "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900",
+    };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        <div className={`min-h-screen transition-colors duration-300 ${themeClasses.bg}`}>
             {/* Ambient effects */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+                <div className={`absolute top-0 left-1/3 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-blue-500/10" : "bg-blue-500/5"}`} />
+                <div className={`absolute bottom-0 right-1/3 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-emerald-500/10" : "bg-emerald-500/5"}`} />
             </div>
 
             <div className="relative z-10">
@@ -64,36 +87,44 @@ export default function AnalyticsPage() {
                 <motion.header
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/80 backdrop-blur-xl"
+                    className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-colors ${themeClasses.header}`}
                 >
                     <div className="flex h-16 items-center justify-between px-6">
                         <div className="flex items-center gap-4">
                             <Link href="/admin">
-                                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hover:bg-white/10">
+                                <Button variant="ghost" size="icon" className={themeClasses.buttonOutline}>
                                     <ArrowLeft className="h-5 w-5" />
                                 </Button>
                             </Link>
                             <div>
-                                <h1 className="text-lg font-bold text-white">Analytics</h1>
-                                <p className="text-xs text-slate-400">Business performance insights</p>
+                                <h1 className={`text-lg font-bold ${themeClasses.text}`}>Analytics</h1>
+                                <p className={`text-xs ${themeClasses.textMuted}`}>Business performance insights</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex bg-white/5 rounded-lg p-1">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setTheme(isDark ? "light" : "dark")}
+                                className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${isDark ? "bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900"}`}
+                            >
+                                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                            </motion.button>
+                            <div className={`flex rounded-lg p-1 ${isDark ? "bg-white/5" : "bg-slate-100"}`}>
                                 {["24h", "7d", "30d", "90d"].map((range) => (
                                     <button
                                         key={range}
                                         onClick={() => setTimeRange(range)}
                                         className={`px-3 py-1 text-sm rounded-md transition-all ${timeRange === range
-                                                ? "bg-white/10 text-white"
-                                                : "text-slate-400 hover:text-white"
+                                            ? (isDark ? "bg-white/10 text-white" : "bg-white text-slate-900 shadow-sm")
+                                            : (isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900")
                                             }`}
                                     >
                                         {range}
                                     </button>
                                 ))}
                             </div>
-                            <Button variant="outline" className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+                            <Button variant="outline" className={themeClasses.buttonOutline}>
                                 <Download className="mr-2 h-4 w-4" />
                                 Export
                             </Button>
@@ -118,17 +149,21 @@ export default function AnalyticsPage() {
                                     transition={{ delay: index * 0.1 }}
                                     whileHover={{ y: -4 }}
                                 >
-                                    <Card className="border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all">
+                                    <Card className={`${themeClasses.card} ${themeClasses.cardHover} transition-all`}>
                                         <CardContent className="p-6">
                                             <div className="flex items-start justify-between mb-4">
-                                                <div className={`p-3 rounded-xl ${stat.trend === "up" ? "bg-emerald-500/20" : "bg-rose-500/20"
+                                                <div className={`p-3 rounded-xl ${stat.trend === "up"
+                                                    ? (isDark ? "bg-emerald-500/20" : "bg-emerald-100")
+                                                    : (isDark ? "bg-rose-500/20" : "bg-rose-100")
                                                     }`}>
-                                                    <Icon className={`h-5 w-5 ${stat.trend === "up" ? "text-emerald-400" : "text-rose-400"
+                                                    <Icon className={`h-5 w-5 ${stat.trend === "up"
+                                                        ? (isDark ? "text-emerald-400" : "text-emerald-600")
+                                                        : (isDark ? "text-rose-400" : "text-rose-600")
                                                         }`} />
                                                 </div>
                                                 <Badge className={`border-0 ${stat.trend === "up"
-                                                        ? "bg-emerald-500/20 text-emerald-400"
-                                                        : "bg-rose-500/20 text-rose-400"
+                                                    ? (isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600")
+                                                    : (isDark ? "bg-rose-500/20 text-rose-400" : "bg-rose-100 text-rose-600")
                                                     }`}>
                                                     {stat.trend === "up" ? (
                                                         <ArrowUpRight className="mr-1 h-3 w-3" />
@@ -138,8 +173,8 @@ export default function AnalyticsPage() {
                                                     {stat.change}
                                                 </Badge>
                                             </div>
-                                            <p className="text-sm text-slate-400">{stat.label}</p>
-                                            <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
+                                            <p className={`text-sm ${themeClasses.textMuted}`}>{stat.label}</p>
+                                            <p className={`text-2xl font-bold mt-1 ${themeClasses.text}`}>{stat.value}</p>
                                         </CardContent>
                                     </Card>
                                 </motion.div>
@@ -155,15 +190,15 @@ export default function AnalyticsPage() {
                             transition={{ delay: 0.3 }}
                             className="lg:col-span-2"
                         >
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                                <CardHeader className="border-b border-white/10">
+                            <Card className={themeClasses.card}>
+                                <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <CardTitle className="text-white flex items-center gap-2">
+                                            <CardTitle className={`flex items-center gap-2 ${themeClasses.text}`}>
                                                 <BarChart3 className="h-5 w-5 text-blue-400" />
                                                 Weekly Performance
                                             </CardTitle>
-                                            <CardDescription className="text-slate-400">Sales and revenue by day</CardDescription>
+                                            <CardDescription className={themeClasses.textMuted}>Sales and revenue by day</CardDescription>
                                         </div>
                                     </div>
                                 </CardHeader>
@@ -205,13 +240,13 @@ export default function AnalyticsPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
                         >
-                            <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
-                                <CardHeader className="border-b border-white/10">
-                                    <CardTitle className="text-white flex items-center gap-2">
+                            <Card className={themeClasses.card}>
+                                <CardHeader className={isDark ? "border-b border-white/10" : "border-b border-slate-200"}>
+                                    <CardTitle className={`flex items-center gap-2 ${themeClasses.text}`}>
                                         <TrendingUp className="h-5 w-5 text-emerald-400" />
                                         Top Products
                                     </CardTitle>
-                                    <CardDescription className="text-slate-400">Best sellers this period</CardDescription>
+                                    <CardDescription className={themeClasses.textMuted}>Best sellers this period</CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-4">
                                     <div className="space-y-3">
@@ -221,20 +256,20 @@ export default function AnalyticsPage() {
                                                 initial={{ opacity: 0, x: 20 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: 0.5 + index * 0.1 }}
-                                                className="flex items-center justify-between p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                                                className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer ${isDark ? "bg-white/5 hover:bg-white/10" : "bg-slate-50 hover:bg-slate-100"}`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-sm font-bold text-slate-400">
+                                                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${isDark ? "bg-slate-800 text-slate-400" : "bg-slate-200 text-slate-600"}`}>
                                                         {index + 1}
                                                     </span>
                                                     <div>
-                                                        <p className="text-sm font-medium text-white truncate max-w-[150px]">{product.name}</p>
+                                                        <p className={`text-sm font-medium truncate max-w-[150px] ${themeClasses.text}`}>{product.name}</p>
                                                         <p className="text-xs text-slate-500">{product.units} units</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-sm font-medium text-emerald-400">{product.revenue}</p>
-                                                    <Badge className="bg-emerald-500/20 text-emerald-400 border-0 text-xs">
+                                                    <p className={`text-sm font-medium ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>{product.revenue}</p>
+                                                    <Badge className={`border-0 text-xs ${isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600"}`}>
                                                         {product.growth}
                                                     </Badge>
                                                 </div>
