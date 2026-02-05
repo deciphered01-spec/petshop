@@ -25,9 +25,22 @@ import {
   Sparkles,
   Package,
   TrendingUp,
-  ArrowDown
+  ArrowDown,
+  ChevronDown,
+  Warehouse,
+  DollarSign,
+  ShoppingCart,
+  Repeat,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -48,6 +61,7 @@ import { ExpensesWidget } from "./ExpensesWidget";
 import { SalesRepView } from "./SalesRepView";
 import { RoleManager } from "./RoleManager";
 import { RevenueMetrics } from "./RevenueMetrics";
+import { DashboardSkeleton } from "./DashboardSkeleton";
 import { useFinance } from "@/hooks/useFinance";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProducts } from "@/hooks/useProducts";
@@ -70,11 +84,15 @@ const staggerContainer = {
 const quickActions = [
   { icon: FileText, label: "Generate Report", color: "emerald", href: "/admin/reports" },
   { icon: Users, label: "Manage Staff", color: "blue", href: "/admin/staff" },
-  { icon: BarChart3, label: "View Analytics", color: "violet", href: "/admin/analytics" },
+  { icon: Repeat, label: "Recurring Expenses", color: "violet", href: "/admin/recurring-expenses" },
   { icon: Settings, label: "Settings", color: "slate", href: "/admin/settings" },
 ];
 
-export function DirectorDashboard() {
+interface DirectorDashboardProps {
+  viewAsRole?: string; // Role to view as (for admin impersonation)
+}
+
+export function DirectorDashboard({ viewAsRole }: DirectorDashboardProps = {}) {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
@@ -82,18 +100,22 @@ export function DirectorDashboard() {
   const isDark = theme === "dark";
 
   // Live Data Hooks
-  const { user, role, loading: authLoading } = useAuth();
+  const { user, role: actualRole, loading: authLoading } = useAuth();
   const { data: financeData } = useFinance();
   const { data: notifications } = useNotifications();
   const { data: products } = useProducts();
 
+  // Use viewAsRole if provided (admin impersonation), otherwise use actual role
+  const role = viewAsRole || actualRole;
+  const isActuallyAdmin = actualRole === 'admin' || actualRole === 'director';
+
 
 
   // Role-Based Access Control logic
-  // If loading, show nothing or spinner
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-[#021a0f] text-emerald-500">Loading Access Control...</div>;
+  // If loading, show skeleton
+  if (authLoading) return <DashboardSkeleton />;
 
-  // Define access permissions
+  // Define access permissions based on the viewing role (not actual role)
   const isAdmin = role === 'admin' || role === 'director';
   const isManager = role === 'manager' || role === 'ops_manager';
   const isAuditor = role === 'auditor';
@@ -110,6 +132,9 @@ export function DirectorDashboard() {
   const netProfit = totalRevenue - totalExpenses;
 
   // Derive Inventory Stats (Stock Value hidden from Ops Manager)
+  // Note: For packs, stock = number of packs, price = price per pack
+  // For singles, stock = number of units, price = price per unit
+  // So calculations are: value = price × stock (works for both)
   const inventoryStats = {
     totalStockValue: (isAdmin || isInventoryManager) ? (products || []).reduce((acc: number, p: any) => acc + (p.costPrice * p.stock), 0) : 0,
     totalMarketValue: (products || []).reduce((acc: number, p: any) => acc + (p.sellingPrice * p.stock), 0),
@@ -244,16 +269,80 @@ export function DirectorDashboard() {
                 />
               </div>
 
-              {/* Navigation Actions */}
-              <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  className={`rounded-full transition-all ${isDark ? 'text-emerald-200 hover:bg-[#143d28]/50 hover:text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-600'}`}
-                >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Operations
-                </Button>
-              </Link>
+              {/* Dashboard Switcher - Admin Only (show on all dashboards when admin is logged in) */}
+              {isActuallyAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={`rounded-full transition-all ${isDark ? 'text-emerald-200 hover:bg-[#143d28]/50 hover:text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-600'}`}
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Dashboards
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className={`w-64 ${isDark ? 'bg-slate-900 border-white/10' : 'bg-white border-slate-200'}`}>
+                    <DropdownMenuLabel className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>Switch Dashboard View</DropdownMenuLabel>
+                    <DropdownMenuSeparator className={isDark ? 'bg-white/10' : 'bg-slate-200'} />
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="flex items-center cursor-pointer">
+                        <BarChart3 className="mr-2 h-4 w-4 text-violet-500" />
+                        <div>
+                          <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Director Dashboard</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">Full admin access</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/operations" className="flex items-center cursor-pointer">
+                        <Warehouse className="mr-2 h-4 w-4 text-blue-500" />
+                        <div>
+                          <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Operations Manager</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">View as ops manager</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/inventory" className="flex items-center cursor-pointer">
+                        <Package className="mr-2 h-4 w-4 text-indigo-500" />
+                        <div>
+                          <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Inventory Manager</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">View as inventory mgr</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/sales" className="flex items-center cursor-pointer">
+                        <DollarSign className="mr-2 h-4 w-4 text-amber-500" />
+                        <div>
+                          <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Sales Rep</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">View as sales rep</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/auditor" className="flex items-center cursor-pointer">
+                        <Shield className="mr-2 h-4 w-4 text-rose-500" />
+                        <div>
+                          <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Auditor</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">View as auditor</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className={isDark ? 'bg-white/10' : 'bg-slate-200'} />
+                    <DropdownMenuItem asChild>
+                      <Link href="/" className="flex items-center cursor-pointer">
+                        <ShoppingCart className="mr-2 h-4 w-4 text-emerald-500" />
+                        <div>
+                          <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>Customer Storefront</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">Public shop view</p>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
 
               <NotificationBell />
 

@@ -50,7 +50,7 @@ This roadmap outlines the strategic milestones required to transition "Baycarl P
     - [x] Real-time notifications with 30s polling.
     - [x] "Moved from X to Y" change messages for compliance.
 
-## 📈 Milestone 3: Advanced Analytics & Operations (Current Status: 🟡 In Progress)
+## 📈 Milestone 3: Advanced Analytics & Operations (Current Status: ✅ Complete)
 *Goal: Enable sophisticated enterprise features for business intelligence.*
 
 - [x] **Per-Batch Analytics**:
@@ -62,16 +62,16 @@ This roadmap outlines the strategic milestones required to transition "Baycarl P
     - [x] RevenueMetrics component with Week/Month/Year filters.
     - [x] Revenue, Expenses, and Net Profit cards with growth indicators.
     - [x] Period-over-period comparison metrics.
-- [ ] **Pack vs Singles Logic**:
-    - [ ] Product form updates to use pack_size column.
-    - [ ] Sales calculations accounting for pack sizes.
-    - [ ] Inventory tracking per pack vs individual units.
-- [ ] **Recurring Expenses**:
-    - [ ] Auto-generation of monthly salary expenses.
-    - [ ] Cron job or scheduled function for recurring items.
-    - [ ] Net Profit calculation including recurring costs.
+- [x] **Pack vs Singles Logic**:
+    - [x] Product form updates to use pack_size column.
+    - [x] Sales calculations accounting for pack sizes.
+    - [x] Inventory tracking per pack vs individual units.
+- [x] **Recurring Expenses**:
+    - [x] Auto-generation of monthly salary expenses.
+    - [x] Cron job or scheduled function for recurring items.
+    - [x] Net Profit calculation including recurring costs.
 
-## 🛒 Milestone 4: Customer Storefront (Current Status: ⬜ Pending)
+## 🛒 Milestone 4: Customer Storefront (Current Status: 🟡 In Progress)
 *Goal: Enable public customers to browse, cart, and purchase products.*
 
 - [x] **Storefront UI**:
@@ -80,15 +80,15 @@ This roadmap outlines the strategic milestones required to transition "Baycarl P
     - [x] Category filtering UI (All, Pet Food, Vitamins, Accessories, Live Pets).
     - [x] Search functionality.
     - [x] Cart sidebar component with add/remove items.
-    - [ ] Connect `CustomerStorefront` to `useProducts` hook (Live data).
-    - [ ] Implement "Featured" filtering with real data.
-    - [ ] Build Product Detail Page (Dynamic routing `/products/[id]`).
+    - [ ] Connect `CustomerStorefront` to `useProducts` hook (Live data). ⏸️ **Deferred**
+    - [ ] Implement "Featured" filtering with real data. ⏸️ **Deferred**
+    - [ ] Build Product Detail Page (Dynamic routing `/products/[id]`). ⏸️ **Deferred**
 - [x] **Shopping Cart**:
     - [x] Cart state management (local state in CustomerStorefront).
     - [x] CartSidebar UI component.
     - [x] Quantity adjustments.
-    - [ ] Cart Context/State (Persisted with localStorage or global state).
-- [ ] **Checkout System**:
+    - [x] Cart Context/State (Persisted with localStorage or global state).
+- [ ] **Checkout System**: ⏸️ **Deferred - Will revisit after Milestone 5**
     - [x] CheckoutModal UI component.
     - [ ] Checkout Form validation.
     - [ ] **Payment Integration**:

@@ -14,7 +14,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useFinance } from "@/hooks/useFinance";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,31 +24,38 @@ export function RevenueMetrics() {
   const supabase = createClient();
 
   // Fetch all revenue and expenses for calculations
-  const { data: revenueData } = useQuery({
+  const { data: revenueData, isLoading: revenueLoading, error: revenueError } = useQuery({
     queryKey: ["revenue-all"],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from("revenue_logs")
         .select("*")
-        .order("logged_at", { ascending: false });
+        .order("logged_at", { ascending: false })
+        .abortSignal(signal);
 
       if (error) throw error;
       return data || [];
     },
+    staleTime: 30000,
   });
 
-  const { data: expenseData } = useQuery({
+  const { data: expenseData, isLoading: expenseLoading, error: expenseError } = useQuery({
     queryKey: ["expenses-all"],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from("expenses")
         .select("*")
-        .order("expense_date", { ascending: false });
+        .order("expense_date", { ascending: false })
+        .abortSignal(signal);
 
       if (error) throw error;
       return data || [];
     },
+    staleTime: 30000,
   });
+
+  const isLoading = revenueLoading || expenseLoading;
+  const hasError = revenueError || expenseError;
 
   // Calculate metrics based on time range
   const metrics = useMemo(() => {
@@ -65,55 +71,61 @@ export function RevenueMetrics() {
     }
 
     const now = new Date();
-    let startDate = new Date();
-    let previousStartDate = new Date();
+    let startDate: Date;
+    let previousStartDate: Date;
 
-    // Calculate date ranges
+    // Calculate date ranges - create new Date objects to avoid mutation
     if (timeRange === "week") {
-      startDate = new Date(now.setDate(now.getDate() - 7));
-      previousStartDate = new Date(now.setDate(now.getDate() - 14));
+      startDate = new Date(now.getTime());
+      startDate.setDate(startDate.getDate() - 7);
+      previousStartDate = new Date(now.getTime());
+      previousStartDate.setDate(previousStartDate.getDate() - 14);
     } else if (timeRange === "month") {
-      startDate = new Date(now.setMonth(now.getMonth() - 1));
-      previousStartDate = new Date(now.setMonth(now.getMonth() - 2));
+      startDate = new Date(now.getTime());
+      startDate.setMonth(startDate.getMonth() - 1);
+      previousStartDate = new Date(now.getTime());
+      previousStartDate.setMonth(previousStartDate.getMonth() - 2);
     } else {
-      startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-      previousStartDate = new Date(now.setFullYear(now.getFullYear() - 2));
+      startDate = new Date(now.getTime());
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      previousStartDate = new Date(now.getTime());
+      previousStartDate.setFullYear(previousStartDate.getFullYear() - 2);
     }
 
     // Filter current period
     const currentRevenue = revenueData.filter(
-      (r) => new Date(r.logged_at) >= startDate
+      (r: any) => new Date(r.logged_at) >= startDate
     );
     const currentExpenses = expenseData.filter(
-      (e) => new Date(e.expense_date) >= startDate
+      (e: any) => new Date(e.expense_date) >= startDate
     );
 
     // Filter previous period
     const previousRevenue = revenueData.filter(
-      (r) =>
+      (r: any) =>
         new Date(r.logged_at) >= previousStartDate &&
         new Date(r.logged_at) < startDate
     );
     const previousExpenses = expenseData.filter(
-      (e) =>
+      (e: any) =>
         new Date(e.expense_date) >= previousStartDate &&
         new Date(e.expense_date) < startDate
     );
 
     // Calculate totals
-    const revenue = currentRevenue.reduce((acc, r) => acc + r.amount, 0);
-    const expenses = currentExpenses.reduce((acc, e) => acc + e.amount, 0);
+    const revenue = currentRevenue.reduce((acc: number, r: any) => acc + r.amount, 0);
+    const expenses = currentExpenses.reduce((acc: number, e: any) => acc + e.amount, 0);
     const profit = revenue - expenses;
 
-    const prevRevenue = previousRevenue.reduce((acc, r) => acc + r.amount, 0);
-    const prevExpenses = previousExpenses.reduce((acc, e) => acc + e.amount, 0);
+    const prevRevenue = previousRevenue.reduce((acc: number, r: any) => acc + r.amount, 0);
+    const prevExpenses = previousExpenses.reduce((acc: number, e: any) => acc + e.amount, 0);
     const prevProfit = prevRevenue - prevExpenses;
 
     // Calculate growth rates
     const revenueGrowth =
       prevRevenue > 0 ? ((revenue - prevRevenue) / prevRevenue) * 100 : 0;
     const profitGrowth =
-      prevProfit > 0 ? ((profit - prevProfit) / Math.abs(prevProfit)) * 100 : 0;
+      prevProfit !== 0 ? ((profit - prevProfit) / Math.abs(prevProfit)) * 100 : 0;
 
     return {
       revenue,
@@ -145,6 +157,7 @@ export function RevenueMetrics() {
               size="sm"
               variant={timeRange === btn.value ? "default" : "outline"}
               onClick={() => setTimeRange(btn.value)}
+              disabled={isLoading}
               className={
                 timeRange === btn.value
                   ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0"
@@ -156,6 +169,18 @@ export function RevenueMetrics() {
           ))}
         </div>
       </div>
+
+      {/* Show error state if queries failed */}
+      {hasError && (
+        <Card className="border-rose-200 dark:border-rose-900/20 bg-rose-50 dark:bg-rose-950/20">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400">
+              <TrendingDown className="h-5 w-5" />
+              <p className="text-sm">Failed to load financial data. Please try refreshing the page.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Metrics Grid */}
       <div className="grid gap-6 md:grid-cols-3">

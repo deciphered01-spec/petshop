@@ -194,7 +194,10 @@ export function OperationsDashboard() {
         description: productData.description,
         sku: productData.sku,
         low_stock_threshold: Number(productData.threshold),
-        image_url: productData.images?.[0]
+        image_url: productData.images?.[0],
+        is_pack: productData.isPack || false,
+        pack_size: productData.isPack ? Number(productData.packSize) || 1 : 1,
+        unit_type: productData.isPack ? productData.unitType || "pcs" : "pcs",
       });
     }
     setSelectedProduct(null);
@@ -419,6 +422,11 @@ export function OperationsDashboard() {
                                   </span>
                                   <Edit3 className="h-3 w-3 text-slate-400" />
                                 </button>
+                              )}
+                              {item.isPack && (
+                                <div className="text-xs text-slate-500 mt-1">
+                                  ({item.packSize} {item.unitType}/pack)
+                                </div>
                               )}
                             </TableCell>
                             <TableCell className="text-right">

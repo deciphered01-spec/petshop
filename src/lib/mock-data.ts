@@ -15,6 +15,9 @@ export interface Product {
   images: string[];
   status: "in-stock" | "low-stock" | "out-of-stock";
   featured: boolean;
+  isPack?: boolean;
+  packSize?: number;
+  unitType?: string;
 }
 
 export interface CartItem {

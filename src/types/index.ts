@@ -79,6 +79,9 @@ export interface AddProductPayload {
     low_stock_threshold?: number;
     image_url?: string;
     is_active?: boolean;
+    is_pack?: boolean;
+    pack_size?: number;
+    unit_type?: string;
 }
 
 export interface UpdateProductPayload extends Partial<AddProductPayload> {

@@ -24,6 +24,8 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { CartProvider } from "@/contexts/CartContext";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -35,7 +37,10 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <QueryProvider>
           <AuthProvider>
-            {children}
+            <CartProvider>
+              {children}
+              <Toaster position="top-right" richColors />
+            </CartProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

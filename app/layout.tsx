@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { CartProvider } from "@/contexts/CartContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -41,7 +42,9 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <AuthProvider>
-              {children}
+              <CartProvider>
+                {children}
+              </CartProvider>
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>

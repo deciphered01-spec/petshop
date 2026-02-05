@@ -21,7 +21,7 @@ export function useRestocks() {
 
     return useQuery({
         queryKey: ['restocks'],
-        queryFn: async () => {
+        queryFn: async ({ signal }) => {
             const { data, error } = await supabase
                 .from('restock_batches')
                 .select(`
@@ -36,7 +36,8 @@ export function useRestocks() {
                         price
                     )
                 `)
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false })
+                .abortSignal(signal);
 
             if (error) throw error;
 

@@ -23,7 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { products as mockProducts, formatCurrency, type Product, type CartItem } from "@/lib/mock-data";
+import { products as mockProducts, formatCurrency, type Product } from "@/lib/mock-data";
+import { useCart } from "@/contexts/CartContext";
 import { ProductDetailModal } from "./ProductDetailModal";
 import { CartSidebar } from "./CartSidebar";
 import { CheckoutModal } from "./CheckoutModal";
@@ -355,7 +356,9 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  // Use CartContext instead of local state
+  const { cart, cartCount, cartTotal, addToCart, updateQuantity, removeFromCart, clearCart } = useCart();
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
@@ -364,39 +367,18 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
     return matchesCategory && matchesSearch;
   });
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = cartItems.reduce((sum, item) => sum + item.product.sellingPrice * item.quantity, 0);
-
   const handleAddToCart = (product: Product, quantity: number = 1) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      }
-      return [...prev, { product, quantity }];
-    });
+    addToCart(product, quantity);
     setSelectedProduct(null);
     setIsCartOpen(true);
   };
 
-  const handleUpdateQuantity = (productId: number, quantity: number) => {
-    if (quantity <= 0) {
-      setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
-    } else {
-      setCartItems((prev) =>
-        prev.map((item) =>
-          item.product.id === productId ? { ...item, quantity } : item
-        )
-      );
-    }
+  const handleUpdateQuantity = (productId: number | string, quantity: number) => {
+    updateQuantity(productId, quantity);
   };
 
-  const handleRemoveItem = (productId: number) => {
-    setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
+  const handleRemoveItem = (productId: number | string) => {
+    removeFromCart(productId);
   };
 
   const handleCheckout = () => {
@@ -405,7 +387,7 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
   };
 
   const handleOrderComplete = () => {
-    setCartItems([]);
+    clearCart();
     setIsCheckoutOpen(false);
   };
 
@@ -492,13 +474,13 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
                 onClick={() => setIsCartOpen(true)}
               >
                 <ShoppingCart className="h-5 w-5 text-slate-600" />
-                {totalItems > 0 && (
+                {cartCount > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white"
                   >
-                    {totalItems}
+                    {cartCount}
                   </motion.span>
                 )}
               </Button>
@@ -1060,19 +1042,19 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
       <CartSidebar
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        items={cartItems}
+        items={cart}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
         onCheckout={handleCheckout}
-        subtotal={subtotal}
+        subtotal={cartTotal}
       />
 
       {/* Checkout Modal */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
-        items={cartItems}
-        subtotal={subtotal}
+        items={cart}
+        subtotal={cartTotal}
         onOrderComplete={handleOrderComplete}
       />
     </div>

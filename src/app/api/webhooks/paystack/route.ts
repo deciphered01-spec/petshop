@@ -112,7 +112,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
             // Get current product data
             const { data: product, error: productError } = await supabase
                 .from('products')
-                .select('id, name, price, cost_price, stock_quantity')
+                .select('id, name, price, cost_price, stock_quantity, is_pack, pack_size')
                 .eq('id', item.product_id)
                 .single();
 
@@ -121,6 +121,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
                 continue;
             }
 
+            // Calculate actual units sold (for packs vs singles)
+            const actualUnitsSold = product.is_pack 
+                ? item.quantity * (product.pack_size || 1)  // quantity of packs × units per pack
+                : item.quantity;  // regular single units
+
             // Create order item
             const { error: itemError } = await supabase
                 .from('order_items')
@@ -128,8 +133,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
                     order_id: order.id,
                     product_id: product.id,
                     product_name: product.name,
-                    quantity: item.quantity,
-                    unit_price: product.price,
+                    quantity: item.quantity,  // Number of packs or singles purchased
+                    unit_price: product.price,  // Price per pack or single
                     total_price: product.price * item.quantity,
                 });
 
@@ -137,7 +142,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
                 console.error('Failed to create order item:', itemError);
             }
 
-            // Decrement stock
+            // Decrement stock (stock is stored as packs if is_pack=true, singles if false)
             const newStock = Math.max(0, product.stock_quantity - item.quantity);
             const { error: stockError } = await supabase
                 .from('products')
@@ -158,6 +163,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<ApiRespon
             });
 
             // Accumulate cost for profit calculation
+            // For packs: cost_price is per pack, so cost = cost_price × quantity
+            // For singles: cost_price is per unit, so cost = cost_price × quantity
             totalCost += product.cost_price * item.quantity;
         }
 

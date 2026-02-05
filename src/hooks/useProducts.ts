@@ -15,7 +15,7 @@ export function useProducts(filters?: ProductFilters) {
 
     return useQuery({
         queryKey: [PRODUCTS_KEY, filters],
-        queryFn: async (): Promise<any[]> => {
+        queryFn: async ({ signal }): Promise<any[]> => {
             let query = supabase
                 .from('products')
                 .select('*')
@@ -32,7 +32,7 @@ export function useProducts(filters?: ProductFilters) {
                 query = query.eq('is_active', filters.isActive);
             }
 
-            const { data, error } = await query;
+            const { data, error } = await query.abortSignal(signal);
 
             if (error) throw error;
 
@@ -59,6 +59,7 @@ export function useProducts(filters?: ProductFilters) {
                 unitType: p.unit_type || 'pcs'
             }));
         },
+        staleTime: 30000,
     });
 }
 
@@ -70,19 +71,21 @@ export function useProduct(productId: string | null) {
 
     return useQuery({
         queryKey: [PRODUCTS_KEY, productId],
-        queryFn: async (): Promise<Product | null> => {
+        queryFn: async ({ signal }): Promise<Product | null> => {
             if (!productId) return null;
 
             const { data, error } = await supabase
                 .from('products')
                 .select('*')
                 .eq('id', productId)
+                .abortSignal(signal)
                 .single();
 
             if (error) throw error;
             return data as Product;
         },
         enabled: !!productId,
+        staleTime: 30000,
     });
 }
 

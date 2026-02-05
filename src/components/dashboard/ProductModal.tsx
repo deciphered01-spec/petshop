@@ -58,6 +58,9 @@ export function ProductModal({
     sellingPrice: product?.sellingPrice || 0,
     stock: product?.stock || 0,
     threshold: product?.threshold || 5,
+    isPack: product?.isPack || false,
+    packSize: product?.packSize || 1,
+    unitType: product?.unitType || "pcs",
   });
 
   // Reset form when product changes
@@ -72,6 +75,9 @@ export function ProductModal({
         sellingPrice: product.sellingPrice,
         stock: product.stock,
         threshold: product.threshold || 5,
+        isPack: product.isPack || false,
+        packSize: product.packSize || 1,
+        unitType: product.unitType || "pcs",
       });
     } else {
       setFormData({
@@ -83,6 +89,9 @@ export function ProductModal({
         sellingPrice: 0,
         stock: 0,
         threshold: 5,
+        isPack: false,
+        packSize: 1,
+        unitType: "pcs",
       });
     }
   }, [product]);
@@ -243,6 +252,69 @@ export function ProductModal({
                     required
                   />
                 </div>
+              </div>
+
+              {/* Pack Configuration */}
+              <div className="mb-6">
+                <label className="mb-3 flex items-center gap-2 text-sm font-medium text-slate-300">
+                  <Package className="h-4 w-4 text-slate-400" />
+                  Pack Configuration
+                </label>
+                <div className="flex items-center gap-4 rounded-xl bg-white/5 p-4 border border-white/10">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={formData.isPack}
+                      onChange={(e) =>
+                        setFormData({ ...formData, isPack: e.target.checked })
+                      }
+                      className="h-4 w-4 rounded border-white/20 bg-white/10 text-emerald-500 focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
+                      Sold as Pack/Carton
+                    </span>
+                  </label>
+                  
+                  {formData.isPack && (
+                    <motion.div
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="flex items-center gap-3 ml-auto"
+                    >
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-slate-400">Units per pack:</label>
+                        <Input
+                          type="number"
+                          value={formData.packSize}
+                          onChange={(e) =>
+                            setFormData({ ...formData, packSize: Number(e.target.value) })
+                          }
+                          className="w-20 h-8 bg-white/5 border-white/10 text-white text-sm"
+                          min={1}
+                          required={formData.isPack}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-slate-400">Unit type:</label>
+                        <Input
+                          type="text"
+                          value={formData.unitType}
+                          onChange={(e) =>
+                            setFormData({ ...formData, unitType: e.target.value })
+                          }
+                          placeholder="e.g., bottles"
+                          className="w-24 h-8 bg-white/5 border-white/10 text-white text-sm placeholder:text-slate-600"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+                {formData.isPack && (
+                  <p className="mt-2 text-xs text-slate-400">
+                    1 pack contains {formData.packSize} {formData.unitType}. Stock quantity represents number of packs.
+                  </p>
+                )}
               </div>
 
               {/* Category */}

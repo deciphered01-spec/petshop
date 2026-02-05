@@ -59,6 +59,9 @@ export type Database = {
           low_stock_threshold: number;
           image_url: string | null;
           is_active: boolean;
+          is_pack: boolean;
+          pack_size: number;
+          unit_type: string;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -75,6 +78,9 @@ export type Database = {
           low_stock_threshold?: number;
           image_url?: string | null;
           is_active?: boolean;
+          is_pack?: boolean;
+          pack_size?: number;
+          unit_type?: string;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -91,6 +97,9 @@ export type Database = {
           low_stock_threshold?: number;
           image_url?: string | null;
           is_active?: boolean;
+          is_pack?: boolean;
+          pack_size?: number;
+          unit_type?: string;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;

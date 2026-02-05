@@ -18,12 +18,13 @@ export function useNotifications() {
 
     const query = useQuery({
         queryKey: ['admin-notifications'],
-        queryFn: async (): Promise<AdminNotification[]> => {
+        queryFn: async ({ signal }): Promise<AdminNotification[]> => {
             const { data, error } = await supabase
                 .from('admin_notifications')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(10);
+                .limit(10)
+                .abortSignal(signal);
 
             if (error) throw error;
 
@@ -33,6 +34,7 @@ export function useNotifications() {
             }));
         },
         refetchInterval: 30000, // Poll every 30s
+        staleTime: 25000,
     });
 
     const markAsRead = useMutation({

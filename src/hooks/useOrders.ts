@@ -123,12 +123,13 @@ export function useRecentOrders(limit: number = 10) {
 
     return useQuery({
         queryKey: [ORDERS_KEY, 'recent', limit],
-        queryFn: async (): Promise<Order[]> => {
+        queryFn: async ({ signal }): Promise<Order[]> => {
             const { data, error } = await supabase
                 .from('orders')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(limit);
+                .limit(50)
+                .abortSignal(signal);
 
             if (error) throw error;
             return (data as Order[]) || [];

@@ -9,13 +9,14 @@ export function useFinance() {
 
     return useQuery({
         queryKey: ['finance-pl'],
-        queryFn: async () => {
+        queryFn: async ({ signal }) => {
             // Fetch Revenue
             const { data: revenueData, error: revenueError } = await supabase
                 .from('revenue_logs')
                 .select('*')
                 .order('logged_at', { ascending: false })
-                .limit(20);
+                .limit(20)
+                .abortSignal(signal);
 
             if (revenueError) throw revenueError;
 
@@ -24,7 +25,8 @@ export function useFinance() {
                 .from('expenses')
                 .select('*')
                 .order('expense_date', { ascending: false })
-                .limit(20);
+                .limit(20)
+                .abortSignal(signal);
 
             if (expenseError) throw expenseError;
 
@@ -57,6 +59,7 @@ export function useFinance() {
             );
 
             return allItems;
-        }
+        },
+        staleTime: 30000,
     });
 }
