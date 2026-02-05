@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { products, formatCurrency, type Product, type CartItem } from "@/lib/mock-data";
+import { products as mockProducts, formatCurrency, type Product, type CartItem } from "@/lib/mock-data";
 import { ProductDetailModal } from "./ProductDetailModal";
 import { CartSidebar } from "./CartSidebar";
 import { CheckoutModal } from "./CheckoutModal";
@@ -339,7 +339,16 @@ function AnimatedSection({
   );
 }
 
-export function CustomerStorefront() {
+// ============================================
+// STOREFRONT COMPONENT
+// ============================================
+
+interface CustomerStorefrontProps {
+  initialProducts?: Product[];
+}
+
+export function CustomerStorefront({ initialProducts = mockProducts }: CustomerStorefrontProps) {
+  const [products] = useState<Product[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);

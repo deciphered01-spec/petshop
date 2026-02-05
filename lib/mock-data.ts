@@ -1,20 +1,20 @@
 // Centralized mock data store for demo purposes
 
 export interface Product {
-  id: number;
+  id: number | string;
   name: string;
-  sku: string;
-  description: string;
-  category: "Pet Food" | "Vitamins" | "Accessories" | "Live Pets";
+  sku?: string;
+  description?: string;
+  category: string;
   costPrice: number;
   sellingPrice: number;
   stock: number;
-  threshold: number;
-  rating: number;
-  reviews: number;
+  threshold?: number;
+  rating?: number;
+  reviews?: number;
   images: string[];
-  status: "in-stock" | "low-stock" | "out-of-stock";
-  featured: boolean;
+  status?: "in-stock" | "low-stock" | "out-of-stock";
+  featured?: boolean;
 }
 
 export interface CartItem {
@@ -460,7 +460,7 @@ export function formatCurrency(amount: number): string {
   return `₦${amount.toLocaleString()}`;
 }
 
-export function getProductById(id: number): Product | undefined {
+export function getProductById(id: number | string): Product | undefined {
   return products.find((p) => p.id === id);
 }
 
@@ -478,7 +478,7 @@ export function searchProducts(query: string): Product[] {
   return products.filter(
     (p) =>
       p.name.toLowerCase().includes(lowercaseQuery) ||
-      p.description.toLowerCase().includes(lowercaseQuery) ||
+      (p.description || "").toLowerCase().includes(lowercaseQuery) ||
       p.category.toLowerCase().includes(lowercaseQuery)
   );
 }

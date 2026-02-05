@@ -49,6 +49,7 @@ import {
 } from "@/lib/mock-data";
 import { ProductModal } from "./ProductModal";
 import { NotificationBell } from "./NotificationsCenter";
+import { InventoryValueSummary } from "./InventoryValueSummary";
 
 // Animation variants
 const fadeInUp = {
@@ -131,7 +132,7 @@ export function OperationsDashboard() {
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.sku.toLowerCase().includes(searchQuery.toLowerCase())
+    (product.sku?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   );
 
   const handleStockChange = (id: number, value: string) => {
@@ -146,15 +147,15 @@ export function OperationsDashboard() {
       );
     } else {
       const newProduct: Product = {
-        id: Math.max(...products.map((p) => p.id)) + 1,
+        id: Math.max(0, ...products.map((p) => Number(p.id))) + 1,
         name: productData.name || "",
         sku: productData.sku || "",
         description: productData.description || "",
         category: productData.category || "Pet Food",
-        costPrice: productData.costPrice || 0,
-        sellingPrice: productData.sellingPrice || 0,
-        stock: productData.stock || 0,
-        threshold: productData.threshold || 5,
+        costPrice: Number(productData.costPrice) || 0,
+        sellingPrice: Number(productData.sellingPrice) || 0,
+        stock: Number(productData.stock) || 0,
+        threshold: Number(productData.threshold) || 5,
         rating: 4.5,
         reviews: 0,
         images: [],
@@ -277,69 +278,14 @@ export function OperationsDashboard() {
             </div>
           </motion.div>
 
-          {/* Stats Grid */}
+          {/* Stats Grid - Using Shared Component */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            className="mb-8"
           >
-            {[
-              {
-                title: "Total Products",
-                value: inventoryStats.totalProducts.toString(),
-                icon: Package,
-                gradient: "from-blue-500 to-cyan-600",
-                bgGradient: "from-blue-500/10 to-cyan-600/10",
-              },
-              {
-                title: "Stock Value",
-                value: `₦${inventoryStats.totalStockValue.toLocaleString()}`,
-                icon: DollarSign,
-                gradient: "from-emerald-500 to-teal-600",
-                bgGradient: "from-emerald-500/10 to-teal-600/10",
-              },
-              {
-                title: "Low Stock Items",
-                value: inventoryStats.lowStockItems.toString(),
-                icon: AlertTriangle,
-                gradient: "from-amber-500 to-orange-600",
-                bgGradient: "from-amber-500/10 to-orange-600/10",
-                alert: inventoryStats.lowStockItems > 0,
-              },
-              {
-                title: "Out of Stock",
-                value: inventoryStats.outOfStockItems.toString(),
-                icon: XCircle,
-                gradient: "from-rose-500 to-pink-600",
-                bgGradient: "from-rose-500/10 to-pink-600/10",
-                alert: inventoryStats.outOfStockItems > 0,
-              },
-            ].map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={stat.title}
-                  variants={fadeInUp}
-                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                >
-                  <Card className={`relative overflow-hidden ${themeClasses.card} ${themeClasses.cardHover} transition-all duration-300 ${stat.alert ? 'ring-1 ring-rose-500/50' : ''}`}>
-                    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.gradient}`} />
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-4">
-                        <div className={`rounded-xl p-3 bg-gradient-to-br ${stat.bgGradient}`}>
-                          <Icon className={`h-6 w-6 ${isDark ? "text-white" : "text-white"}`} /> {/* Kept icons white as they are on colored bg */}
-                        </div>
-                        <div>
-                          <p className={`text-sm font-medium ${themeClasses.textMuted}`}>{stat.title}</p>
-                          <p className={`text-2xl font-bold ${themeClasses.text}`}>{stat.value}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+            <InventoryValueSummary stats={inventoryStats} />
           </motion.div>
 
           <div className="grid gap-6 lg:grid-cols-3">
@@ -410,8 +356,8 @@ export function OperationsDashboard() {
                               {editingId === item.id ? (
                                 <Input
                                   type="number"
-                                  value={stockValues[item.id]}
-                                  onChange={(e) => handleStockChange(item.id, e.target.value)}
+                                  value={stockValues[Number(item.id)]}
+                                  onChange={(e) => handleStockChange(Number(item.id), e.target.value)}
                                   className={`h-8 w-20 text-center mx-auto ${themeClasses.stockInput}`}
                                   min={0}
                                   autoFocus
@@ -421,7 +367,7 @@ export function OperationsDashboard() {
                               ) : (
                                 <button
                                   type="button"
-                                  onClick={() => setEditingId(item.id)}
+                                  onClick={() => setEditingId(Number(item.id))}
                                   className="inline-flex items-center gap-1 rounded-lg px-3 py-1 font-semibold hover:bg-white/10 transition-colors"
                                 >
                                   <span
@@ -433,7 +379,7 @@ export function OperationsDashboard() {
                                           : themeClasses.text
                                     }
                                   >
-                                    {stockValues[item.id]}
+                                    {stockValues[Number(item.id)]}
                                   </span>
                                   <Edit3 className="h-3 w-3 text-slate-400" />
                                 </button>

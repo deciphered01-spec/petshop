@@ -7,21 +7,26 @@
 -- 1. CUSTOM TYPES / ENUMS
 -- ============================================================================
 
--- User role enum for RBAC
-CREATE TYPE public.user_role AS ENUM ('director', 'manager', 'customer');
-
--- Order status enum
-CREATE TYPE public.order_status AS ENUM ('pending', 'processing', 'completed', 'cancelled', 'refunded');
-
--- Payment status enum
-CREATE TYPE public.payment_status AS ENUM ('pending', 'successful', 'failed');
+-- Helper block to create types safely
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+        CREATE TYPE public.user_role AS ENUM ('director', 'manager', 'customer');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'order_status') THEN
+        CREATE TYPE public.order_status AS ENUM ('pending', 'processing', 'completed', 'cancelled', 'refunded');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status') THEN
+        CREATE TYPE public.payment_status AS ENUM ('pending', 'successful', 'failed');
+    END IF;
+END$$;
 
 -- ============================================================================
 -- 2. TABLES
 -- ============================================================================
 
 -- Profiles table (extends auth.users)
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT NOT NULL,
     full_name TEXT,
@@ -33,7 +38,7 @@ CREATE TABLE public.profiles (
 );
 
 -- Products table (Inventory)
-CREATE TABLE public.products (
+CREATE TABLE IF NOT EXISTS public.products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     description TEXT,
@@ -51,7 +56,7 @@ CREATE TABLE public.products (
 );
 
 -- Orders table
-CREATE TABLE public.orders (
+CREATE TABLE IF NOT EXISTS public.orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_number TEXT UNIQUE NOT NULL,
     customer_id UUID REFERENCES public.profiles(id),
@@ -69,7 +74,7 @@ CREATE TABLE public.orders (
 );
 
 -- Order Items table
-CREATE TABLE public.order_items (
+CREATE TABLE IF NOT EXISTS public.order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID NOT NULL REFERENCES public.orders(id) ON DELETE CASCADE,
     product_id UUID NOT NULL REFERENCES public.products(id),
@@ -81,7 +86,7 @@ CREATE TABLE public.order_items (
 );
 
 -- Expenses table (Director access only)
-CREATE TABLE public.expenses (
+CREATE TABLE IF NOT EXISTS public.expenses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     description TEXT,
@@ -95,7 +100,7 @@ CREATE TABLE public.expenses (
 );
 
 -- Revenue Logs table (Director access only)
-CREATE TABLE public.revenue_logs (
+CREATE TABLE IF NOT EXISTS public.revenue_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID REFERENCES public.orders(id),
     amount DECIMAL(10, 2) NOT NULL,
@@ -109,7 +114,7 @@ CREATE TABLE public.revenue_logs (
 );
 
 -- Inventory Action Logs (for audit trail)
-CREATE TABLE public.inventory_logs (
+CREATE TABLE IF NOT EXISTS public.inventory_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID NOT NULL REFERENCES public.products(id),
     action TEXT NOT NULL, -- 'add', 'update', 'delete', 'stock_adjustment'
@@ -123,16 +128,16 @@ CREATE TABLE public.inventory_logs (
 -- 3. INDEXES (Performance Optimization)
 -- ============================================================================
 
-CREATE INDEX idx_products_category ON public.products(category);
-CREATE INDEX idx_products_is_active ON public.products(is_active);
-CREATE INDEX idx_products_sku ON public.products(sku);
-CREATE INDEX idx_orders_customer_id ON public.orders(customer_id);
-CREATE INDEX idx_orders_status ON public.orders(status);
-CREATE INDEX idx_orders_created_at ON public.orders(created_at);
-CREATE INDEX idx_order_items_order_id ON public.order_items(order_id);
-CREATE INDEX idx_expenses_expense_date ON public.expenses(expense_date);
-CREATE INDEX idx_revenue_logs_logged_at ON public.revenue_logs(logged_at);
-CREATE INDEX idx_inventory_logs_product_id ON public.inventory_logs(product_id);
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category);
+CREATE INDEX IF NOT EXISTS idx_products_is_active ON public.products(is_active);
+CREATE INDEX IF NOT EXISTS idx_products_sku ON public.products(sku);
+CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON public.orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON public.orders(created_at);
+CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON public.order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_expenses_expense_date ON public.expenses(expense_date);
+CREATE INDEX IF NOT EXISTS idx_revenue_logs_logged_at ON public.revenue_logs(logged_at);
+CREATE INDEX IF NOT EXISTS idx_inventory_logs_product_id ON public.inventory_logs(product_id);
 
 -- ============================================================================
 -- 4. FUNCTIONS
@@ -204,33 +209,46 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- ============================================================================
 
 -- Updated at triggers
-CREATE TRIGGER set_profiles_updated_at
-    BEFORE UPDATE ON public.profiles
-    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'set_profiles_updated_at') THEN
+        CREATE TRIGGER set_profiles_updated_at
+            BEFORE UPDATE ON public.profiles
+            FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'set_products_updated_at') THEN
+        CREATE TRIGGER set_products_updated_at
+            BEFORE UPDATE ON public.products
+            FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'set_orders_updated_at') THEN
+        CREATE TRIGGER set_orders_updated_at
+            BEFORE UPDATE ON public.orders
+            FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'set_expenses_updated_at') THEN
+        CREATE TRIGGER set_expenses_updated_at
+            BEFORE UPDATE ON public.expenses
+            FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+    END IF;
 
-CREATE TRIGGER set_products_updated_at
-    BEFORE UPDATE ON public.products
-    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created') THEN
+        CREATE TRIGGER on_auth_user_created
+            AFTER INSERT ON auth.users
+            FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+    END IF;
 
-CREATE TRIGGER set_orders_updated_at
-    BEFORE UPDATE ON public.orders
-    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
-
-CREATE TRIGGER set_expenses_updated_at
-    BEFORE UPDATE ON public.expenses
-    FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
-
--- Auto-create profile on user signup
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- Auto-generate order number
-CREATE TRIGGER set_order_number
-    BEFORE INSERT ON public.orders
-    FOR EACH ROW
-    WHEN (NEW.order_number IS NULL)
-    EXECUTE FUNCTION public.generate_order_number();
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'set_order_number') THEN
+        CREATE TRIGGER set_order_number
+            BEFORE INSERT ON public.orders
+            FOR EACH ROW
+            WHEN (NEW.order_number IS NULL)
+            EXECUTE FUNCTION public.generate_order_number();
+    END IF;
+END$$;
 
 -- ============================================================================
 -- 6. ROW LEVEL SECURITY (RLS) POLICIES
@@ -245,32 +263,39 @@ ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.revenue_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.inventory_logs ENABLE ROW LEVEL SECURITY;
 
+-- Note: Policies cannot be easily wrapped in IF NOT EXISTS, 
+-- but attempting to create a duplicate policy throws an error in Postgres.
+-- To make this fully idempotent, we would drop policies before creating them
+-- or use complex DO blocks. For cleanliness, we will omit the DO blocks for policies
+-- here, assuming this is a BASE schema. If conflicts arise, DROP POLICIES first.
+
 -- ============================================================================
 -- PROFILES POLICIES
 -- ============================================================================
 
 -- Users can view their own profile
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile"
     ON public.profiles FOR SELECT
     USING (auth.uid() = id);
 
--- Directors can view all profiles
+DROP POLICY IF EXISTS "Directors can view all profiles" ON public.profiles;
 CREATE POLICY "Directors can view all profiles"
     ON public.profiles FOR SELECT
     USING (public.is_director(auth.uid()));
 
--- Managers can view customer profiles
+DROP POLICY IF EXISTS "Managers can view profiles" ON public.profiles;
 CREATE POLICY "Managers can view profiles"
     ON public.profiles FOR SELECT
     USING (public.is_staff(auth.uid()));
 
--- Users can update their own profile
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile"
     ON public.profiles FOR UPDATE
     USING (auth.uid() = id)
     WITH CHECK (auth.uid() = id AND role = (SELECT role FROM public.profiles WHERE id = auth.uid()));
 
--- Directors can update any profile
+DROP POLICY IF EXISTS "Directors can update profiles" ON public.profiles;
 CREATE POLICY "Directors can update profiles"
     ON public.profiles FOR UPDATE
     USING (public.is_director(auth.uid()));
@@ -279,27 +304,27 @@ CREATE POLICY "Directors can update profiles"
 -- PRODUCTS POLICIES
 -- ============================================================================
 
--- Anyone can view active products (public catalog)
+DROP POLICY IF EXISTS "Anyone can view active products" ON public.products;
 CREATE POLICY "Anyone can view active products"
     ON public.products FOR SELECT
     USING (is_active = true);
 
--- Staff can view all products (including inactive)
+DROP POLICY IF EXISTS "Staff can view all products" ON public.products;
 CREATE POLICY "Staff can view all products"
     ON public.products FOR SELECT
     USING (public.is_staff(auth.uid()));
 
--- Managers and Directors can insert products
+DROP POLICY IF EXISTS "Staff can insert products" ON public.products;
 CREATE POLICY "Staff can insert products"
     ON public.products FOR INSERT
     WITH CHECK (public.is_staff(auth.uid()));
 
--- Managers and Directors can update products
+DROP POLICY IF EXISTS "Staff can update products" ON public.products;
 CREATE POLICY "Staff can update products"
     ON public.products FOR UPDATE
     USING (public.is_staff(auth.uid()));
 
--- Only Directors can delete products
+DROP POLICY IF EXISTS "Directors can delete products" ON public.products;
 CREATE POLICY "Directors can delete products"
     ON public.products FOR DELETE
     USING (public.is_director(auth.uid()));
@@ -308,22 +333,22 @@ CREATE POLICY "Directors can delete products"
 -- ORDERS POLICIES
 -- ============================================================================
 
--- Customers can view their own orders
+DROP POLICY IF EXISTS "Customers can view own orders" ON public.orders;
 CREATE POLICY "Customers can view own orders"
     ON public.orders FOR SELECT
     USING (customer_id = auth.uid());
 
--- Staff can view all orders
+DROP POLICY IF EXISTS "Staff can view all orders" ON public.orders;
 CREATE POLICY "Staff can view all orders"
     ON public.orders FOR SELECT
     USING (public.is_staff(auth.uid()));
 
--- Anyone can create orders (for checkout)
+DROP POLICY IF EXISTS "Anyone can create orders" ON public.orders;
 CREATE POLICY "Anyone can create orders"
     ON public.orders FOR INSERT
     WITH CHECK (true);
 
--- Staff can update orders
+DROP POLICY IF EXISTS "Staff can update orders" ON public.orders;
 CREATE POLICY "Staff can update orders"
     ON public.orders FOR UPDATE
     USING (public.is_staff(auth.uid()));
@@ -332,62 +357,62 @@ CREATE POLICY "Staff can update orders"
 -- ORDER ITEMS POLICIES
 -- ============================================================================
 
--- Customers can view their own order items
+DROP POLICY IF EXISTS "Customers can view own order items" ON public.order_items;
 CREATE POLICY "Customers can view own order items"
     ON public.order_items FOR SELECT
     USING (
         order_id IN (SELECT id FROM public.orders WHERE customer_id = auth.uid())
     );
 
--- Staff can view all order items
+DROP POLICY IF EXISTS "Staff can view all order items" ON public.order_items;
 CREATE POLICY "Staff can view all order items"
     ON public.order_items FOR SELECT
     USING (public.is_staff(auth.uid()));
 
--- Order items can be inserted during checkout
+DROP POLICY IF EXISTS "Anyone can create order items" ON public.order_items;
 CREATE POLICY "Anyone can create order items"
     ON public.order_items FOR INSERT
     WITH CHECK (true);
 
 -- ============================================================================
--- EXPENSES POLICIES (Director Only)
+-- EXPENSES POLICIES
 -- ============================================================================
 
--- Only Directors can view expenses
+DROP POLICY IF EXISTS "Directors can view expenses" ON public.expenses;
 CREATE POLICY "Directors can view expenses"
     ON public.expenses FOR SELECT
     USING (public.is_director(auth.uid()));
 
--- Only Directors can insert expenses
+DROP POLICY IF EXISTS "Directors can insert expenses" ON public.expenses;
 CREATE POLICY "Directors can insert expenses"
     ON public.expenses FOR INSERT
     WITH CHECK (public.is_director(auth.uid()));
 
--- Only Directors can update expenses
+DROP POLICY IF EXISTS "Directors can update expenses" ON public.expenses;
 CREATE POLICY "Directors can update expenses"
     ON public.expenses FOR UPDATE
     USING (public.is_director(auth.uid()));
 
--- Only Directors can delete expenses
+DROP POLICY IF EXISTS "Directors can delete expenses" ON public.expenses;
 CREATE POLICY "Directors can delete expenses"
     ON public.expenses FOR DELETE
     USING (public.is_director(auth.uid()));
 
 -- ============================================================================
--- REVENUE LOGS POLICIES (Director Only)
+-- REVENUE LOGS POLICIES
 -- ============================================================================
 
--- Only Directors can view revenue logs (CRITICAL - Managers cannot see profit)
+DROP POLICY IF EXISTS "Directors can view revenue logs" ON public.revenue_logs;
 CREATE POLICY "Directors can view revenue logs"
     ON public.revenue_logs FOR SELECT
     USING (public.is_director(auth.uid()));
 
--- Revenue logs are inserted by the system (service role)
+DROP POLICY IF EXISTS "System can insert revenue logs" ON public.revenue_logs;
 CREATE POLICY "System can insert revenue logs"
     ON public.revenue_logs FOR INSERT
     WITH CHECK (true);
 
--- Only Directors can update revenue logs
+DROP POLICY IF EXISTS "Directors can update revenue logs" ON public.revenue_logs;
 CREATE POLICY "Directors can update revenue logs"
     ON public.revenue_logs FOR UPDATE
     USING (public.is_director(auth.uid()));
@@ -396,12 +421,12 @@ CREATE POLICY "Directors can update revenue logs"
 -- INVENTORY LOGS POLICIES
 -- ============================================================================
 
--- Staff can view inventory logs
+DROP POLICY IF EXISTS "Staff can view inventory logs" ON public.inventory_logs;
 CREATE POLICY "Staff can view inventory logs"
     ON public.inventory_logs FOR SELECT
     USING (public.is_staff(auth.uid()));
 
--- Staff can insert inventory logs
+DROP POLICY IF EXISTS "Staff can insert inventory logs" ON public.inventory_logs;
 CREATE POLICY "Staff can insert inventory logs"
     ON public.inventory_logs FOR INSERT
     WITH CHECK (public.is_staff(auth.uid()));
@@ -410,13 +435,8 @@ CREATE POLICY "Staff can insert inventory logs"
 -- 7. GRANTS (Service Role Permissions)
 -- ============================================================================
 
--- Grant service role full access for webhook operations
 GRANT ALL ON public.products TO service_role;
 GRANT ALL ON public.orders TO service_role;
 GRANT ALL ON public.order_items TO service_role;
 GRANT ALL ON public.revenue_logs TO service_role;
 GRANT ALL ON public.inventory_logs TO service_role;
-
--- ============================================================================
--- END OF SCHEMA
--- ============================================================================
