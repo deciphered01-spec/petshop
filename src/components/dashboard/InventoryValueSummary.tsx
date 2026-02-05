@@ -11,16 +11,16 @@ interface InventoryStats {
     lowStockItems: number;
 }
 
-export function InventoryValueSummary({ stats }: { stats: InventoryStats }) {
+export function InventoryValueSummary({ stats, hideStockValue }: { stats: InventoryStats; hideStockValue?: boolean }) {
     const cards = [
-        {
+        ...(!hideStockValue ? [{
             title: "Stock Value",
             value: `₦${stats.totalStockValue.toLocaleString()}`,
             subtitle: "Cost Price",
             icon: Package,
             gradient: "from-blue-500 to-cyan-600",
             bgGradient: "from-blue-500/10 to-cyan-600/10",
-        },
+        }] : []),
         {
             title: "Market Value",
             value: `₦${stats.totalMarketValue.toLocaleString()}`,

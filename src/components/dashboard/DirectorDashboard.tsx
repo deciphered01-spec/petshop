@@ -47,6 +47,7 @@ import { AddRestockBatch } from "./AddRestockBatch";
 import { ExpensesWidget } from "./ExpensesWidget";
 import { SalesRepView } from "./SalesRepView";
 import { RoleManager } from "./RoleManager";
+import { RevenueMetrics } from "./RevenueMetrics";
 import { useFinance } from "@/hooks/useFinance";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProducts } from "@/hooks/useProducts";
@@ -314,6 +315,18 @@ export function DirectorDashboard() {
               className="mb-8"
             >
               <SalesRepView />
+            </motion.div>
+          )}
+
+          {/* NEW: Revenue Metrics with Time-Range Filters - Admin/Manager Only */}
+          {(isAdmin || isManager) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mb-8"
+            >
+              <RevenueMetrics />
             </motion.div>
           )}
 
