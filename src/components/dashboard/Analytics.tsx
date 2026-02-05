@@ -46,7 +46,7 @@ const generateData = (range: "weekly" | "monthly" | "yearly") => {
     }
 };
 
-export function Analytics() {
+export function Analytics({ restrictYearly = false }: { restrictYearly?: boolean }) {
     const [mounted, setMounted] = useState(false);
     const [timeRange, setTimeRange] = useState<"weekly" | "monthly" | "yearly">("monthly");
     const data = useMemo(() => generateData(timeRange), [timeRange]);
@@ -74,10 +74,10 @@ export function Analytics() {
                     <p className="text-sm text-slate-500 dark:text-slate-400">Revenue and profit metrics</p>
                 </div>
                 <Tabs defaultValue="monthly" onValueChange={(v) => setTimeRange(v as any)} className="w-[300px]">
-                    <TabsList className="grid w-full grid-cols-3 bg-slate-100 dark:bg-slate-800">
+                    <TabsList className={`grid w-full ${restrictYearly ? 'grid-cols-2' : 'grid-cols-3'} bg-slate-100 dark:bg-slate-800`}>
                         <TabsTrigger value="weekly">Weekly</TabsTrigger>
                         <TabsTrigger value="monthly">Monthly</TabsTrigger>
-                        <TabsTrigger value="yearly">Yearly</TabsTrigger>
+                        {!restrictYearly && <TabsTrigger value="yearly">Yearly</TabsTrigger>}
                     </TabsList>
                 </Tabs>
             </div>

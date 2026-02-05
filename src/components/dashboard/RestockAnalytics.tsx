@@ -74,7 +74,9 @@ export function RestockAnalytics() {
                                 <TableHead className="font-semibold dark:text-slate-400">Batch Info</TableHead>
                                 <TableHead className="font-semibold dark:text-slate-400 text-right">Qty</TableHead>
                                 <TableHead className="font-semibold dark:text-slate-400 text-right">Cost/Unit</TableHead>
-                                <TableHead className="font-semibold dark:text-slate-400 text-right">Potential Profit</TableHead>
+                                <TableHead className="font-semibold dark:text-slate-400 text-right">Stock Value</TableHead>
+                                <TableHead className="font-semibold dark:text-slate-400 text-right">Market Value</TableHead>
+                                <TableHead className="font-semibold dark:text-slate-400 text-right">Profit Potential</TableHead>
                                 <TableHead className="font-semibold dark:text-slate-400 text-right">ROI</TableHead>
                                 <TableHead className="font-semibold dark:text-slate-400 text-center">Status</TableHead>
                             </TableRow>
@@ -85,6 +87,11 @@ export function RestockAnalytics() {
                                 const potentialRevenue = batch.quantityReceived * batch.sellingPriceAtStocking;
                                 const potentialProfit = potentialRevenue - totalCost;
                                 const roi = totalCost > 0 ? ((potentialProfit / totalCost) * 100).toFixed(1) : "0.0";
+                                
+                                // Current batch values (remaining stock)
+                                const stockValue = batch.remainingQuantity * batch.costPricePerUnit;
+                                const marketValue = batch.remainingQuantity * batch.sellingPriceAtStocking;
+                                const profitPotential = marketValue - stockValue;
 
                                 return (
                                     <TableRow key={batch.id} className="dark:border-white/5 border-slate-100 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
@@ -117,13 +124,28 @@ export function RestockAnalytics() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex flex-col items-end">
-                                                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                                                    ₦{potentialProfit.toLocaleString()}
+                                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                                    ₦{stockValue.toLocaleString()}
                                                 </span>
                                                 <span className="text-xs text-slate-400">
-                                                    Rev: ₦{potentialRevenue.toLocaleString()}
+                                                    {batch.remainingQuantity} × ₦{batch.costPricePerUnit.toLocaleString()}
                                                 </span>
                                             </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex flex-col items-end">
+                                                <span className="font-semibold text-violet-600 dark:text-violet-400">
+                                                    ₦{marketValue.toLocaleString()}
+                                                </span>
+                                                <span className="text-xs text-slate-400">
+                                                    {batch.remainingQuantity} × ₦{batch.sellingPriceAtStocking.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                                ₦{profitPotential.toLocaleString()}
+                                            </span>
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border-0">

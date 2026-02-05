@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -93,9 +94,7 @@ export default function LoginPage() {
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-emerald-500/20 rounded-xl border border-emerald-500/20 backdrop-blur-sm">
-                            <Zap className="h-6 w-6 text-emerald-400" />
-                        </div>
+                        <Image src="/favicon.svg" alt="Baycarl" width={32} height={32} className="h-8 w-8" />
                         <span className="text-2xl font-bold text-white tracking-tight">Baycarl Enterprise</span>
                     </div>
                 </div>

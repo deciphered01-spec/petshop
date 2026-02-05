@@ -46,6 +46,7 @@ import { RestockAnalytics } from "./RestockAnalytics";
 import { AddRestockBatch } from "./AddRestockBatch";
 import { ExpensesWidget } from "./ExpensesWidget";
 import { SalesRepView } from "./SalesRepView";
+import { RoleManager } from "./RoleManager";
 import { useFinance } from "@/hooks/useFinance";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProducts } from "@/hooks/useProducts";
@@ -107,9 +108,9 @@ export function DirectorDashboard() {
   const totalExpenses = displayPL.reduce((acc, item) => item.type === 'expense' ? acc + Math.abs(item.amount) : acc, 0);
   const netProfit = totalRevenue - totalExpenses;
 
-  // Derive Inventory Stats
+  // Derive Inventory Stats (Stock Value hidden from Ops Manager)
   const inventoryStats = {
-    totalStockValue: (products || []).reduce((acc: number, p: any) => acc + (p.costPrice * p.stock), 0),
+    totalStockValue: (isAdmin || isInventoryManager) ? (products || []).reduce((acc: number, p: any) => acc + (p.costPrice * p.stock), 0) : 0,
     totalMarketValue: (products || []).reduce((acc: number, p: any) => acc + (p.sellingPrice * p.stock), 0),
     profitPotential: (products || []).reduce((acc: number, p: any) => acc + ((p.sellingPrice - p.costPrice) * p.stock), 0),
     totalProducts: (products || []).length,
@@ -181,12 +182,7 @@ export function DirectorDashboard() {
             <div className="flex items-center gap-6">
               {/* Brand Logo Area */}
               <div className="flex items-center gap-4">
-                <div className="relative group">
-                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 opacity-70 blur transition duration-500 group-hover:opacity-100" />
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 shadow-2xl ring-1 ring-white/10">
-                    <Image src="/favicon.svg" alt="Baycarl" width={24} height={24} className="h-6 w-6" />
-                  </div>
-                </div>
+                <Image src="/favicon.svg" alt="Baycarl" width={40} height={40} className="h-10 w-10" />
                 <div>
                   <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-cyan-400">
                     Baycarl
@@ -200,9 +196,24 @@ export function DirectorDashboard() {
               {/* Vertical Divider */}
               <div className={`h-8 w-px hidden md:block ${isDark ? 'bg-emerald-900/40' : 'bg-slate-200'}`} />
 
-              {/* Dashboard Title */}
-              <div className="hidden md:block">
+              {/* Dashboard Title with Role Badge */}
+              <div className="hidden md:flex items-center gap-3">
                 <h2 className={`text-sm font-semibold ${isDark ? 'text-emerald-100' : 'text-slate-700'}`}>Director Dashboard</h2>
+                <Badge className={`text-xs font-medium uppercase tracking-wide ${
+                  isAdmin 
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white' 
+                    : isManager
+                    ? 'bg-blue-600/90 text-white'
+                    : isAuditor
+                    ? 'bg-violet-600/90 text-white'
+                    : isSalesRep
+                    ? 'bg-amber-600/90 text-white'
+                    : isInventoryManager
+                    ? 'bg-indigo-600/90 text-white'
+                    : 'bg-slate-600/90 text-white'
+                }`}>
+                  {role === 'director' ? 'Admin' : role === 'ops_manager' ? 'Ops Manager' : role?.replace('_', ' ')}
+                </Badge>
               </div>
             </div>
 
@@ -294,7 +305,7 @@ export function DirectorDashboard() {
             </div>
           </motion.div>
 
-          {/* NEW: Analytics Component with Filters - Admin/Auditor Only */}
+          {/* Sales Rep View */}
           {(isSalesRep) && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -306,19 +317,20 @@ export function DirectorDashboard() {
             </motion.div>
           )}
 
-          {(isAdmin || isAuditor || isManager) && (
+          {/* NEW: Analytics Component - Admin only gets Yearly, Manager/IM get Weekly/Monthly only */}
+          {(isAdmin || isManager) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="mb-8"
             >
-              <Analytics />
+              <Analytics restrictYearly={!isAdmin} />
             </motion.div>
           )}
 
-          {/* NEW: Inventory Value Mirror - Admin/Manager Only */}
-          {(isAdmin || isManager || isInventoryManager) && (
+          {/* NEW: Inventory Value Mirror - Admin/Inventory Manager Only (Ops Manager CANNOT see) */}
+          {(isAdmin || isInventoryManager) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -326,7 +338,7 @@ export function DirectorDashboard() {
               className="mb-8"
             >
               <h3 className={`text-lg font-semibold mb-4 ${themeClasses.text}`}>Inventory Value Summary</h3>
-              <InventoryValueSummary stats={inventoryStats} />
+              <InventoryValueSummary stats={inventoryStats} hideStockValue={!isAdmin && !isInventoryManager} />
             </motion.div>
           )}
 
@@ -353,12 +365,24 @@ export function DirectorDashboard() {
             </div>
           )}
 
+          {/* NEW: Role Manager - Admin Only */}
+          {(isAdmin) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.32 }}
+              className="mb-8"
+            >
+              <RoleManager />
+            </motion.div>
+          )}
+
           {/* NEW: Expenses Widget - Admin/Director Only */}
           {(isAdmin) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.34 }}
               className="mb-8"
             >
               <ExpensesWidget />
