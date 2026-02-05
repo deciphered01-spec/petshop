@@ -28,7 +28,7 @@ interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (product: Partial<Product>) => void;
-  onDelete?: (productId: number) => void;
+  onDelete?: (productId: string | number) => void;
 }
 
 const categories = ["Pet Food", "Vitamins", "Accessories", "Live Pets"] as const;
@@ -65,13 +65,13 @@ export function ProductModal({
     if (product) {
       setFormData({
         name: product.name,
-        sku: product.sku,
+        sku: product.sku || "",
         category: product.category,
-        description: product.description,
+        description: product.description || "",
         costPrice: product.costPrice,
         sellingPrice: product.sellingPrice,
         stock: product.stock,
-        threshold: product.threshold,
+        threshold: product.threshold || 5,
       });
     } else {
       setFormData({
@@ -259,8 +259,8 @@ export function ProductModal({
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setFormData({ ...formData, category: cat })}
                       className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${formData.category === cat
-                          ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25"
-                          : "bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10 hover:text-white"
+                        ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25"
+                        : "bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10 hover:text-white"
                         }`}
                     >
                       <span>{categoryIcons[cat]}</span>
@@ -370,10 +370,10 @@ export function ProductModal({
                       </span>
                       <Badge
                         className={`border-0 ${Number(profitMargin) > 20
-                            ? "bg-emerald-500/20 text-emerald-400"
-                            : Number(profitMargin) > 10
-                              ? "bg-amber-500/20 text-amber-400"
-                              : "bg-rose-500/20 text-rose-400"
+                          ? "bg-emerald-500/20 text-emerald-400"
+                          : Number(profitMargin) > 10
+                            ? "bg-amber-500/20 text-amber-400"
+                            : "bg-rose-500/20 text-rose-400"
                           }`}
                       >
                         {profitMargin}%

@@ -42,6 +42,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useProducts, useAddProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProducts";
+import { useEffect } from "react";
 import {
   products as initialProducts,
   stockoutPredictions,
@@ -66,15 +68,30 @@ const staggerContainer = {
 };
 
 export function OperationsDashboard() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  // Data Fetching
+  const { data: dbProducts, isLoading, refetch } = useProducts();
+
+  // Local state for optimistic updates / editing
+  const [products, setProducts] = useState<any[]>([]); // Using any for transition, ideally strongly typed
+  const [editingId, setEditingId] = useState<string | number | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [stockValues, setStockValues] = useState<Record<number, number>>(
-    Object.fromEntries(initialProducts.map((item) => [item.id, item.stock]))
-  );
+  const [stockValues, setStockValues] = useState<Record<string, number>>({});
+
+  // Sync DB data to local state when fetched
+  useEffect(() => {
+    if (dbProducts) {
+      setProducts(dbProducts);
+      // Initialize stock values
+      const stocks: Record<string, number> = {};
+      dbProducts.forEach(p => {
+        stocks[p.id] = p.stock;
+      });
+      setStockValues(stocks);
+    }
+  }, [dbProducts]);
 
   const isDark = theme === "dark";
 
@@ -130,47 +147,62 @@ export function OperationsDashboard() {
     profitPotential: products.reduce((sum, p) => sum + (p.sellingPrice - p.costPrice) * p.stock, 0),
   };
 
+  const updateProduct = useUpdateProduct();
+  const addProduct = useAddProduct();
+  const deleteProduct = useDeleteProduct();
+
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (product.sku?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   );
 
-  const handleStockChange = (id: number, value: string) => {
+  const handleStockChange = (id: string, value: string) => {
     const numValue = Number.parseInt(value) || 0;
+    // Optimistic UI update for input field
     setStockValues((prev) => ({ ...prev, [id]: numValue }));
+
+    // Debounce or just update on Blur/Enter? 
+    // Ideally we debounce, but for now we'll rely on the user explicitly finishing edit or hitting enter if we wanted.
+    // However, the input onChange calls this. We shouldn't blast the DB.
+    // Let's just update local state here, and actual DB update happens onBlur/Enter in the Input component.
+    // BUT the Input component calls this on onChange.
+    // So we'll just update stockValues here. The actual mutation should be triggered separately.
+    // Wait, the previous code didn't save to DB at all. 
+    // I need to add a "save" on blur/enter in the JSX.
+  };
+
+  const saveStockUpdate = (id: string, value: number) => {
+    updateProduct.mutate({ id, updates: { stock: value } });
+    setEditingId(null);
   };
 
   const handleSaveProduct = (productData: Partial<Product>) => {
-    if (productData.id) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === productData.id ? { ...p, ...productData } as Product : p))
-      );
+    if (productData.id && typeof productData.id === 'string') {
+      // Update existing
+      updateProduct.mutate({
+        id: productData.id as string,
+        updates: productData
+      });
     } else {
-      const newProduct: Product = {
-        id: Math.max(0, ...products.map((p) => Number(p.id))) + 1,
-        name: productData.name || "",
-        sku: productData.sku || "",
-        description: productData.description || "",
+      // Add new
+      addProduct.mutate({
+        name: productData.name || "New Product",
         category: productData.category || "Pet Food",
-        costPrice: Number(productData.costPrice) || 0,
-        sellingPrice: Number(productData.sellingPrice) || 0,
-        stock: Number(productData.stock) || 0,
-        threshold: Number(productData.threshold) || 5,
-        rating: 4.5,
-        reviews: 0,
-        images: [],
-        status: productData.status || "in-stock",
-        featured: false,
-      };
-      setProducts((prev) => [...prev, newProduct]);
-      setStockValues((prev) => ({ ...prev, [newProduct.id]: newProduct.stock }));
+        price: Number(productData.sellingPrice) || 0,
+        cost_price: Number(productData.costPrice) || 0,
+        stock_quantity: Number(productData.stock) || 0,
+        description: productData.description,
+        sku: productData.sku,
+        low_stock_threshold: Number(productData.threshold),
+        image_url: productData.images?.[0]
+      });
     }
     setSelectedProduct(null);
     setIsAddModalOpen(false);
   };
 
-  const handleDeleteProduct = (productId: number) => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
+  const handleDeleteProduct = (productId: string | number) => {
+    deleteProduct.mutate(String(productId));
     setSelectedProduct(null);
   };
 
@@ -356,18 +388,22 @@ export function OperationsDashboard() {
                               {editingId === item.id ? (
                                 <Input
                                   type="number"
-                                  value={stockValues[Number(item.id)]}
-                                  onChange={(e) => handleStockChange(Number(item.id), e.target.value)}
+                                  value={stockValues[item.id]}
+                                  onChange={(e) => handleStockChange(item.id, e.target.value)}
                                   className={`h-8 w-20 text-center mx-auto ${themeClasses.stockInput}`}
                                   min={0}
                                   autoFocus
-                                  onBlur={() => setEditingId(null)}
-                                  onKeyDown={(e) => e.key === "Enter" && setEditingId(null)}
+                                  onBlur={(e) => saveStockUpdate(item.id, Number(e.target.value))}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      saveStockUpdate(item.id, Number(e.currentTarget.value));
+                                    }
+                                  }}
                                 />
                               ) : (
                                 <button
                                   type="button"
-                                  onClick={() => setEditingId(Number(item.id))}
+                                  onClick={() => setEditingId(item.id)}
                                   className="inline-flex items-center gap-1 rounded-lg px-3 py-1 font-semibold hover:bg-white/10 transition-colors"
                                 >
                                   <span
@@ -379,7 +415,7 @@ export function OperationsDashboard() {
                                           : themeClasses.text
                                     }
                                   >
-                                    {stockValues[Number(item.id)]}
+                                    {stockValues[item.id]}
                                   </span>
                                   <Edit3 className="h-3 w-3 text-slate-400" />
                                 </button>

@@ -1,7 +1,7 @@
 // Centralized mock data store for demo purposes
 
 export interface Product {
-  id: number;
+  id: string | number;
   name: string;
   sku: string;
   description: string;
@@ -460,7 +460,7 @@ export function formatCurrency(amount: number): string {
   return `₦${amount.toLocaleString()}`;
 }
 
-export function getProductById(id: number): Product | undefined {
+export function getProductById(id: string | number): Product | undefined {
   return products.find((p) => p.id === id);
 }
 

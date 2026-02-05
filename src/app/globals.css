@@ -14,8 +14,8 @@
   --popover: #ffffff;
   --popover-foreground: #0f172a;
   
-  /* Brighter "Pet Shop" Green */
-  --primary: #00d26a;  /* Vibrant Green */
+  /* Baycarl Logo Green - Deep Forest Green */
+  --primary: #006B3F;
   --primary-foreground: #ffffff;
   
   --secondary: #eff6ff; /* Blue 50 */
@@ -32,12 +32,12 @@
   
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #00d26a;
+  --ring: #006B3F;
   
   --radius: 0.75rem; /* Slightly more rounded for modern feel */
   
   /* Charts - Vibrant & Distinct */
-  --chart-1: #00d26a; /* Green */
+  --chart-1: #006B3F; /* Green */
   --chart-2: #3b82f6; /* Blue */
   --chart-3: #8b5cf6; /* Violet */
   --chart-4: #f59e0b; /* Amber */
@@ -54,7 +54,7 @@
 }
 
 .dark {
-  /* Luxurious Dark Mode - Deep Blue/Slate base instead of pure black */
+  /* Luxurious Dark Mode - Deep Blue/Slate base */
   --background: #020617; /* Slate 950 */
   --foreground: #f8fafc; /* Slate 50 */
   

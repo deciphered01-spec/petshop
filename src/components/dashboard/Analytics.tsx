@@ -47,8 +47,17 @@ const generateData = (range: "weekly" | "monthly" | "yearly") => {
 };
 
 export function Analytics() {
+    const [mounted, setMounted] = useState(false);
     const [timeRange, setTimeRange] = useState<"weekly" | "monthly" | "yearly">("monthly");
     const data = useMemo(() => generateData(timeRange), [timeRange]);
+
+    // Prevent hydration mismatch for Radix Tabs IDs
+    if (typeof window !== "undefined" && !mounted) {
+        setMounted(true);
+    }
+
+    // Only render after mount to ensure IDs match
+    if (!mounted) return null;
 
     const themeClasses = {
         card: "border-white/10 bg-white/5 backdrop-blur-sm",

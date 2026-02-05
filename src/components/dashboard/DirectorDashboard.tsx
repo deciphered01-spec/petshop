@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -22,7 +23,9 @@ import {
   Sun,
   AlertTriangle,
   Sparkles,
-  Package
+  Package,
+  TrendingUp,
+  ArrowDown
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,9 +43,14 @@ import { NotificationBell } from "./NotificationsCenter";
 import { Analytics } from "./Analytics";
 import { InventoryValueSummary } from "./InventoryValueSummary";
 import { RestockAnalytics } from "./RestockAnalytics";
+import { AddRestockBatch } from "./AddRestockBatch";
 import { ExpensesWidget } from "./ExpensesWidget";
-import { products as mockProducts } from "@/lib/mock-data";
-
+import { SalesRepView } from "./SalesRepView";
+import { useFinance } from "@/hooks/useFinance";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useProducts } from "@/hooks/useProducts";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -57,56 +65,6 @@ const staggerContainer = {
   }
 };
 
-const plData = [
-  {
-    date: "2024-01-15",
-    description: "Royal Canin Bulk Order",
-    category: "Inventory Purchase",
-    aiTag: "Recurring",
-    amount: -125000,
-    status: "Completed",
-  },
-  {
-    date: "2024-01-14",
-    description: "Weekend Sales Revenue",
-    category: "Sales",
-    aiTag: "Peak Period",
-    amount: 245000,
-    status: "Verified",
-  },
-  {
-    date: "2024-01-13",
-    description: "Utility Bill - January",
-    category: "Operating Expense",
-    aiTag: "Fixed",
-    amount: -45000,
-    status: "Completed",
-  },
-  {
-    date: "2024-01-11",
-    description: "Staff Salary - Week 2",
-    category: "Payroll",
-    aiTag: "Fixed",
-    amount: -180000,
-    status: "Completed",
-  },
-];
-
-const anomalies = [
-  {
-    type: "Mismatched Receipt",
-    description: "Receipt #4521 shows ₦45,000 but POS records ₦42,500",
-    severity: "high",
-    date: "Jan 10, 2024",
-  },
-  {
-    type: "Stock Discrepancy",
-    description: "5 units of Royal Canin missing from inventory count",
-    severity: "high",
-    date: "Jan 8, 2024",
-  },
-];
-
 const quickActions = [
   { icon: FileText, label: "Generate Report", color: "emerald", href: "/admin/reports" },
   { icon: Users, label: "Manage Staff", color: "blue", href: "/admin/staff" },
@@ -116,19 +74,46 @@ const quickActions = [
 
 export function DirectorDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
   const isDark = theme === "dark";
 
-  // Calculate Inventory Stats for the Summary Component (Mirrored from Operations)
-  // In a real app, this would come from a shared API hook.
+  // Live Data Hooks
+  const { user, role, loading: authLoading } = useAuth();
+  const { data: financeData } = useFinance();
+  const { data: notifications } = useNotifications();
+  const { data: products } = useProducts();
+
+
+
+  // Role-Based Access Control logic
+  // If loading, show nothing or spinner
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center bg-[#021a0f] text-emerald-500">Loading Access Control...</div>;
+
+  // Define access permissions
+  const isAdmin = role === 'admin' || role === 'director';
+  const isManager = role === 'manager' || role === 'ops_manager';
+  const isAuditor = role === 'auditor';
+  const isSalesRep = role === 'sales_rep';
+  const isInventoryManager = role === 'inventory_manager';
+
+  // Use live data or fallbacks for loading states
+  const displayPL = financeData || [];
+  const displayNotifications = notifications || [];
+
+  // Calculate Stats
+  const totalRevenue = displayPL.reduce((acc, item) => item.type === 'revenue' ? acc + item.amount : acc, 0);
+  const totalExpenses = displayPL.reduce((acc, item) => item.type === 'expense' ? acc + Math.abs(item.amount) : acc, 0);
+  const netProfit = totalRevenue - totalExpenses;
+
+  // Derive Inventory Stats
   const inventoryStats = {
-    totalStockValue: mockProducts.reduce((sum, p) => sum + p.costPrice * p.stock, 0),
-    totalMarketValue: mockProducts.reduce((sum, p) => sum + p.sellingPrice * p.stock, 0),
-    profitPotential: mockProducts.reduce((sum, p) => sum + (p.sellingPrice - p.costPrice) * p.stock, 0),
-    totalProducts: mockProducts.length,
-    lowStockItems: mockProducts.filter((p) => p.status === "low-stock").length,
+    totalStockValue: (products || []).reduce((acc: number, p: any) => acc + (p.costPrice * p.stock), 0),
+    totalMarketValue: (products || []).reduce((acc: number, p: any) => acc + (p.sellingPrice * p.stock), 0),
+    profitPotential: (products || []).reduce((acc: number, p: any) => acc + ((p.sellingPrice - p.costPrice) * p.stock), 0),
+    totalProducts: (products || []).length,
+    lowStockItems: (products || []).filter((p: any) => p.status === "low-stock").length
   };
 
   // Theme-aware classes
@@ -188,8 +173,8 @@ export function DirectorDashboard() {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className={`sticky top-0 z-50 border-b transition-all duration-300 ${isDark
-              ? "border-white/10 bg-slate-900/80 backdrop-blur-xl"
-              : "border-emerald-100 bg-white/80 backdrop-blur-xl shadow-sm"
+            ? "border-emerald-900/40 bg-[#0a2e1a]/80 backdrop-blur-xl"
+            : "border-emerald-100 bg-white/80 backdrop-blur-xl shadow-sm"
             }`}
         >
           <div className="flex h-20 items-center justify-between px-6">
@@ -199,7 +184,7 @@ export function DirectorDashboard() {
                 <div className="relative group">
                   <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 opacity-70 blur transition duration-500 group-hover:opacity-100" />
                   <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 shadow-2xl ring-1 ring-white/10">
-                    <Zap className="h-6 w-6 text-emerald-400" />
+                    <Image src="/favicon.svg" alt="Baycarl" width={24} height={24} className="h-6 w-6" />
                   </div>
                 </div>
                 <div>
@@ -213,11 +198,11 @@ export function DirectorDashboard() {
               </div>
 
               {/* Vertical Divider */}
-              <div className="h-8 w-px bg-slate-200 dark:bg-white/10 hidden md:block" />
+              <div className={`h-8 w-px hidden md:block ${isDark ? 'bg-emerald-900/40' : 'bg-slate-200'}`} />
 
               {/* Dashboard Title */}
               <div className="hidden md:block">
-                <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Director Dashboard</h2>
+                <h2 className={`text-sm font-semibold ${isDark ? 'text-emerald-100' : 'text-slate-700'}`}>Director Dashboard</h2>
               </div>
             </div>
 
@@ -226,8 +211,8 @@ export function DirectorDashboard() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${isDark ? "bg-white/5 hover:bg-white/10 text-yellow-400" : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+                onClick={toggleTheme}
+                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${isDark ? "bg-[#143d28]/50 hover:bg-[#1b4d30]/60 text-yellow-400" : "bg-slate-100 hover:bg-slate-200 text-slate-600"
                   }`}
               >
                 {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -241,8 +226,8 @@ export function DirectorDashboard() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={`w-72 h-10 pl-10 rounded-full transition-all duration-300 ${isDark
-                      ? "bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:bg-white/10 focus:border-emerald-500/50"
-                      : "bg-slate-50 border-slate-200 text-slate-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
+                    ? "bg-[#143d28]/50 border-emerald-900/40 text-emerald-50 placeholder:text-emerald-400/40 focus:bg-[#1b4d30]/60 focus:border-emerald-500/50"
+                    : "bg-slate-50 border-slate-200 text-slate-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
                     }`}
                 />
               </div>
@@ -251,7 +236,7 @@ export function DirectorDashboard() {
               <Link href="/dashboard">
                 <Button
                   variant="ghost"
-                  className="rounded-full hover:bg-emerald-50 text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white transition-all"
+                  className={`rounded-full transition-all ${isDark ? 'text-emerald-200 hover:bg-[#143d28]/50 hover:text-white' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-600'}`}
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Operations
@@ -261,15 +246,21 @@ export function DirectorDashboard() {
               <NotificationBell />
 
               {/* User Profile - Premium Look */}
-              <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-white/10 cursor-pointer group">
+              <div className={`flex items-center gap-3 pl-4 border-l cursor-pointer group ${isDark ? 'border-emerald-900/40' : 'border-slate-200'}`}>
                 <div className="text-right hidden lg:block">
-                  <p className="text-sm font-bold text-slate-700 dark:text-white group-hover:text-emerald-500 transition-colors">Admin User</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Director</p>
+                  <p className={`text-sm font-bold group-hover:text-emerald-500 transition-colors ${isDark ? 'text-emerald-50' : 'text-slate-700'}`}>
+                    {user?.user_metadata?.full_name || "User"}
+                  </p>
+                  <p className={`text-xs font-mono uppercase ${isDark ? 'text-emerald-300/60' : 'text-slate-500'}`}>
+                    {role?.replace('_', ' ') || "Loading..."}
+                  </p>
                 </div>
                 <div className="relative">
                   <div className="absolute -inset-0.5 rounded-full bg-gradient-to-tr from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition duration-300 blur-sm" />
-                  <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center ring-2 ring-white dark:ring-slate-800">
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">AD</span>
+                  <div className={`relative h-10 w-10 rounded-full flex items-center justify-center ring-2 ${isDark ? 'bg-gradient-to-br from-emerald-900 to-emerald-950 ring-emerald-900' : 'bg-gradient-to-br from-slate-100 to-slate-200 ring-white'}`}>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                      {role ? role.substring(0, 2) : "US"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -303,47 +294,76 @@ export function DirectorDashboard() {
             </div>
           </motion.div>
 
-          {/* NEW: Analytics Component with Filters */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8"
-          >
-            <Analytics />
-          </motion.div>
+          {/* NEW: Analytics Component with Filters - Admin/Auditor Only */}
+          {(isSalesRep) && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mb-8"
+            >
+              <SalesRepView />
+            </motion.div>
+          )}
 
-          {/* NEW: Inventory Value Mirror */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="mb-8"
-          >
-            <h3 className={`text-lg font-semibold mb-4 ${themeClasses.text}`}>Inventory Value Summary</h3>
-            <InventoryValueSummary stats={inventoryStats} />
-          </motion.div>
+          {(isAdmin || isAuditor || isManager) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mb-8"
+            >
+              <Analytics />
+            </motion.div>
+          )}
+
+          {/* NEW: Inventory Value Mirror - Admin/Manager Only */}
+          {(isAdmin || isManager || isInventoryManager) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="mb-8"
+            >
+              <h3 className={`text-lg font-semibold mb-4 ${themeClasses.text}`}>Inventory Value Summary</h3>
+              <InventoryValueSummary stats={inventoryStats} />
+            </motion.div>
+          )}
 
 
-          {/* NEW: Restock Analytics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.28 }}
-            className="mb-8"
-          >
-            <RestockAnalytics />
-          </motion.div>
+          {/* NEW: Restock Analytics - Inventory/Admin Only */}
+          {(isAdmin || isInventoryManager || isManager) && (
+            <div className="grid lg:grid-cols-3 gap-8 mb-8">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.28 }}
+                className="lg:col-span-2"
+              >
+                <RestockAnalytics />
+              </motion.div>
 
-          {/* NEW: Expenses Widget */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-8"
-          >
-            <ExpensesWidget />
-          </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <AddRestockBatch />
+              </motion.div>
+            </div>
+          )}
+
+          {/* NEW: Expenses Widget - Admin/Director Only */}
+          {(isAdmin) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mb-8"
+            >
+              <ExpensesWidget />
+            </motion.div>
+          )}
 
           {/* Quick Actions */}
           <motion.div
@@ -413,7 +433,7 @@ export function DirectorDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {plData.map((row, index) => (
+                      {displayPL.map((row, index) => (
                         <TableRow
                           key={index}
                           className={`${themeClasses.tableRow} ${row.status === "Flagged" ? (isDark ? "bg-rose-500/10" : "bg-rose-50") : ""}`}
@@ -426,7 +446,7 @@ export function DirectorDashboard() {
                                 ? "bg-rose-500/20 text-rose-600"
                                 : row.aiTag === "Peak Period"
                                   ? "bg-blue-500/20 text-blue-600"
-                                  : isDark ? "bg-slate-500/20 text-slate-400" : "bg-slate-100 text-slate-600"
+                                  : isDark ? "bg-emerald-500/20 text-emerald-300" : "bg-slate-100 text-slate-600"
                                 }`}
                             >
                               <Sparkles className="mr-1 h-3 w-3" />
@@ -445,7 +465,7 @@ export function DirectorDashboard() {
                                 ? "bg-rose-500/20 text-rose-600"
                                 : row.status === "Verified"
                                   ? "bg-emerald-500/20 text-emerald-600"
-                                  : isDark ? "bg-slate-500/20 text-slate-400" : "bg-slate-100 text-slate-600"
+                                  : isDark ? "bg-emerald-500/20 text-emerald-300" : "bg-slate-100 text-slate-600"
                                 }`}
                             >
                               {row.status}
@@ -481,34 +501,34 @@ export function DirectorDashboard() {
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-3">
-                    {anomalies.map((anomaly, index) => (
+                    {displayNotifications.map((notification, index) => (
                       <motion.div
-                        key={index}
+                        key={notification.id}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.6 + index * 0.1 }}
-                        className={`rounded-xl border p-4 ${anomaly.severity === "high"
+                        className={`rounded-xl border p-4 ${notification.severity === "high"
                           ? isDark ? "border-rose-500/30 bg-rose-500/10" : "border-rose-200 bg-rose-50"
                           : isDark ? "border-amber-500/30 bg-amber-500/10" : "border-amber-200 bg-amber-50"
                           }`}
                       >
                         <div className="flex items-start justify-between">
                           <span
-                            className={`text-sm font-semibold ${anomaly.severity === "high" ? "text-rose-600" : "text-amber-600"
+                            className={`text-sm font-semibold ${notification.severity === "high" ? "text-rose-600" : "text-amber-600"
                               }`}
                           >
-                            {anomaly.type}
+                            {notification.related_entity_type.replace(/_/g, " ").toUpperCase() || "ALERT"}
                           </span>
                           <Badge
-                            className={`border-0 ${anomaly.severity === "high"
+                            className={`border-0 ${notification.severity === "high"
                               ? "bg-rose-500 text-white"
                               : "bg-amber-500 text-white"
                               }`}
                           >
-                            {anomaly.severity}
+                            {notification.severity}
                           </Badge>
                         </div>
-                        <p className={`mt-2 text-sm ${themeClasses.textMuted}`}>{anomaly.description}</p>
+                        <p className={`mt-2 text-sm ${themeClasses.textMuted}`}>{notification.message}</p>
                       </motion.div>
                     ))}
                   </div>

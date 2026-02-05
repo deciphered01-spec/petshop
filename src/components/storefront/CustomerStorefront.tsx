@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import {
@@ -359,7 +360,7 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
   const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (product.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -432,7 +433,7 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
               className="flex items-center gap-2"
             >
               <Image
-                src="/logo-green.png"
+                src="/logo-blue.png"
                 alt="Baycarl Pet Shop"
                 width={140}
                 height={40}
@@ -503,16 +504,18 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="hidden bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 shadow-lg shadow-emerald-500/25 sm:inline-flex rounded-full">
-                Sign In
-              </Button>
+              <Link href="/signin">
+                <Button className="hidden bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 shadow-lg shadow-emerald-500/25 sm:inline-flex rounded-full">
+                  Sign In
+                </Button>
+              </Link>
             </motion.div>
           </div>
         </div>
       </motion.header>
 
       {/* Hero Section with Animal Decorations */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-900">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#006B3F] via-[#005C35] to-[#003D23]">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -550,23 +553,18 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
           <DecorativeBones />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-4 py-6 sm:py-8 sm:px-6 lg:py-12 lg:px-8">
-          <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="relative mx-auto max-w-7xl px-4 py-4 sm:py-8 sm:px-6 lg:py-12 lg:px-8">
+          {/* Mobile: text left + image right side-by-side. Desktop: original two-column layout */}
+          <div className="grid grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-2 lg:gap-8">
             <motion.div
-              className="text-center lg:text-left"
+              className="text-left lg:text-left"
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
             >
-              <motion.div variants={fadeInUp}>
-                <Badge className="mb-3 border-emerald-400/30 bg-gradient-to-r from-emerald-500/20 to-sky-500/20 text-white backdrop-blur-sm px-3 py-1.5 text-xs sm:text-sm">
-                  <PawPrint size={14} className="mr-1.5" />
-                  Free Delivery on Orders Above ₦50,000
-                </Badge>
-              </motion.div>
               <motion.h1
                 variants={fadeInUp}
-                className="text-balance text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-lg"
+                className="text-balance text-2xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl drop-shadow-lg"
               >
                 Premium Pet{" "}
                 <span className="bg-gradient-to-r from-amber-300 to-orange-300 bg-clip-text text-transparent">
@@ -575,70 +573,43 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
               </motion.h1>
               <motion.p
                 variants={fadeInUp}
-                className="mt-3 max-w-xl text-base leading-relaxed text-emerald-100/90 sm:text-lg"
+                className="mt-1.5 max-w-xl text-sm leading-relaxed text-emerald-100/90 sm:text-lg sm:mt-3"
               >
                 Give your furry friends the best. Quality pet food, vitamins, and accessories delivered to your doorstep across Nigeria.
               </motion.p>
               <motion.div
                 variants={fadeInUp}
-                className="mt-4 flex flex-col gap-2 sm:mt-5 sm:flex-row sm:justify-center lg:justify-start"
+                className="mt-3 flex flex-col gap-1.5 sm:mt-5 sm:flex-row sm:justify-center sm:gap-2 lg:justify-start"
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button size="default" className="w-full sm:w-auto bg-white text-emerald-700 hover:bg-emerald-50 shadow-xl shadow-black/20 rounded-full px-6 font-semibold group">
-                    <PawPrint size={18} className="mr-2 group-hover:animate-bounce" />
+                  <Button size="sm" className="w-full h-8 text-xs sm:h-10 sm:text-sm sm:w-auto bg-white text-emerald-700 hover:bg-emerald-50 shadow-xl shadow-black/20 rounded-full px-3 sm:px-4 font-semibold group">
+                    <PawPrint size={14} className="mr-1.5 sm:mr-2 group-hover:animate-bounce" />
                     Shop Now
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-1.5 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
-                    size="default"
+                    size="sm"
                     variant="outline"
-                    className="w-full sm:w-auto border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm rounded-full px-6"
+                    className="w-full h-8 text-xs sm:h-10 sm:text-sm sm:w-auto border-white/30 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm rounded-full px-3 sm:px-4"
                   >
-                    <Zap className="mr-2 h-4 w-4" />
+                    <Zap className="mr-1.5 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                     View Deals
                   </Button>
                 </motion.div>
               </motion.div>
-
-              {/* Stats with pet icons */}
-              <motion.div
-                variants={fadeInUp}
-                className="mt-5 grid grid-cols-3 gap-3 sm:gap-4"
-              >
-                {[
-                  { value: "10K+", label: "Happy Pets", icon: HeartPaw },
-                  { value: "500+", label: "Products", icon: Package },
-                  { value: "4.9", label: "Rating", icon: Star },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    className="text-center lg:text-left"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="flex items-center gap-1.5 justify-center lg:justify-start">
-                      <stat.icon size={20} className="text-amber-300" />
-                      <span className="text-xl font-bold text-white sm:text-2xl">{stat.value}</span>
-                    </div>
-                    <div className="text-xs text-emerald-200 mt-0.5">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </motion.div>
             </motion.div>
 
-            {/* Hero Image with decorative elements - Now visible on all screens */}
+            {/* Hero Image - right side on mobile, original position on desktop */}
             <motion.div
-              className="order-first lg:order-last"
+              className="lg:order-last"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <motion.div
-                className="relative mx-auto h-[180px] w-[180px] sm:h-[220px] sm:w-[220px] lg:h-[300px] lg:w-[300px] rounded-3xl bg-gradient-to-br from-white/10 to-white/5 p-2 sm:p-3 backdrop-blur-sm border border-white/10"
+                className="relative mx-auto h-[140px] w-[140px] sm:h-[220px] sm:w-[220px] lg:h-[300px] lg:w-[300px] rounded-3xl bg-gradient-to-br from-white/10 to-white/5 p-2 sm:p-3 backdrop-blur-sm border border-white/10"
                 whileHover={{ scale: 1.02, rotateY: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
@@ -708,20 +679,21 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
         <PawTrail />
       </section>
 
-      {/* Shop by Category Section */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* Shop by Category Section - compact to fit in landing view */}
+      <section className="mx-auto max-w-7xl px-4 py-3 sm:py-8 sm:px-6 lg:py-12 lg:px-8">
         <AnimatedSection>
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl flex items-center justify-center gap-3">
-              <PawPrint size={28} className="text-emerald-500" />
+          <div className="text-center mb-2 sm:mb-8">
+            <h2 className="text-base font-bold text-slate-900 sm:text-3xl flex items-center justify-center gap-2 sm:gap-3">
+              <PawPrint size={18} className="text-emerald-500 sm:hidden" />
+              <PawPrint size={28} className="text-emerald-500 hidden sm:block" />
               Shop by Category
             </h2>
-            <p className="mt-2 text-slate-600">Find the perfect products for your furry, feathered, or scaly friends</p>
+            <p className="mt-0.5 text-[10px] text-slate-600 sm:text-base sm:mt-2">Find the perfect products for your furry, feathered, or scaly friends</p>
           </div>
         </AnimatedSection>
 
         <motion.div
-          className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6"
+          className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-4 lg:gap-6"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
@@ -741,7 +713,7 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
               onClick={() => setSelectedCategory(category.name)}
               className="cursor-pointer group"
             >
-              <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg">
+              <div className="relative aspect-[5/4] sm:aspect-square rounded-xl sm:rounded-2xl overflow-hidden shadow-lg">
                 {/* Category Image */}
                 <Image
                   src={category.image}
@@ -758,13 +730,13 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    <span className="text-5xl sm:text-6xl drop-shadow-lg">{category.icon}</span>
+                    <span className="text-3xl sm:text-5xl lg:text-6xl drop-shadow-lg">{category.icon}</span>
                   </motion.div>
                   <PawPrint size={60} className="absolute -bottom-4 -right-4 text-white/10 rotate-[-20deg]" />
                 </div>
                 {/* Category name */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/60 to-transparent">
-                  <h3 className="text-white font-semibold text-sm sm:text-base">{category.name}</h3>
+                <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-3 lg:p-4 bg-gradient-to-t from-black/60 to-transparent">
+                  <h3 className="text-white font-semibold text-[10px] sm:text-sm lg:text-base">{category.name}</h3>
                 </div>
               </div>
             </motion.div>
@@ -951,7 +923,7 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
       <AnimatedSection>
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <motion.div
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 p-8 sm:p-12 lg:p-16"
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#006B3F] via-[#005C35] to-[#003D23] p-8 sm:p-12 lg:p-16"
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.3 }}
           >
@@ -990,6 +962,56 @@ export function CustomerStorefront({ initialProducts = mockProducts }: CustomerS
               </div>
             </div>
           </motion.div>
+        </section>
+      </AnimatedSection>
+
+      {/* Stats Section */}
+      <AnimatedSection>
+        <section className="relative border-y border-slate-200/50 bg-gradient-to-r from-slate-50 via-white to-slate-50 py-12 overflow-hidden">
+          {/* Background paws */}
+          <PawPrint size={200} className="absolute -left-20 -top-10 text-emerald-100/20 rotate-[-30deg]" />
+          <PawPrint size={150} className="absolute -right-10 -bottom-10 text-emerald-100/20 rotate-[20deg]" />
+
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="grid grid-cols-3 gap-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+            >
+              {[
+                { value: "10K+", label: "Happy Pets", icon: HeartPaw, color: "emerald" },
+                { value: "500+", label: "Products", icon: Package, color: "sky" },
+                { value: "4.9", label: "Rating", icon: Star, color: "amber" },
+              ].map((stat, index) => {
+                const Icon = stat.icon;
+                const colorClasses = {
+                  emerald: "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100",
+                  sky: "bg-sky-50 text-sky-600 group-hover:bg-sky-100",
+                  amber: "bg-amber-50 text-amber-600 group-hover:bg-amber-100",
+                };
+                return (
+                  <motion.div
+                    key={stat.label}
+                    className="group text-center"
+                    variants={fadeInUp}
+                    whileHover={{ y: -5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div
+                      className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl transition-colors ${colorClasses[stat.color as keyof typeof colorClasses]}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                    >
+                      <Icon className="h-8 w-8" />
+                    </motion.div>
+                    <h4 className="text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{stat.value}</h4>
+                    <p className="mt-1 text-sm text-slate-600">{stat.label}</p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
         </section>
       </AnimatedSection>
 

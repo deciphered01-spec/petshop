@@ -180,7 +180,8 @@ CREATE TABLE IF NOT EXISTS public.expenses (
 -- Stores metadata from AI-processed receipts
 CREATE TABLE IF NOT EXISTS public.receipt_scans (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    image_url TEXT NOT NULL,
+    file_url TEXT NOT NULL,
+    file_type TEXT, -- 'image/jpeg', 'application/pdf', 'text/plain', etc.
     
     -- AI Extraction Results
     extracted_data JSONB, -- Stores { amount, date, vendor, items: [] }

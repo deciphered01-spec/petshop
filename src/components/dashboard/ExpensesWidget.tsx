@@ -25,48 +25,31 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-// Mock Data matching the new 'expenses' schema
-const mockExpenses = [
-    {
-        id: "1",
-        description: "Staff Salaries (January)",
-        amount: 450000,
-        category: "Payroll",
-        isRecurring: true,
-        recurrenceInterval: "Monthly",
-        nextDueDate: "2024-02-28",
-        status: "paid",
-        dateIncurred: "2024-01-28",
-    },
-    {
-        id: "2",
-        description: "Store Rent (Q1)",
-        amount: 1200000,
-        category: "Rent",
-        isRecurring: true,
-        recurrenceInterval: "Quarterly",
-        nextDueDate: "2024-04-01",
-        status: "pending",
-        dateIncurred: "2024-01-01",
-    },
-    {
-        id: "3",
-        description: "Electricity Bill",
-        amount: 45000,
-        category: "Utility",
-        isRecurring: true,
-        recurrenceInterval: "Monthly",
-        nextDueDate: "2024-02-28",
-        status: "overdue",
-        dateIncurred: "2024-01-25",
-    },
-];
+import { useFinance } from "@/hooks/useFinance";
 
 export function ExpensesWidget() {
-    const [filter, setFilter] = useState("all");
 
-    const totalExpenses = mockExpenses.reduce((sum, item) => sum + item.amount, 0);
-    const recurringTotal = mockExpenses.filter(i => i.isRecurring).reduce((sum, item) => sum + item.amount, 0);
+    const [filter, setFilter] = useState("all");
+    const { data: financeItems } = useFinance();
+
+    // Filter only expenses and map to widget format
+    const expenses = (financeItems || [])
+        .filter(item => item.type === 'expense')
+        .map(item => ({
+            id: item.id,
+            description: item.description,
+            amount: Math.abs(item.amount),
+            category: item.category,
+            status: item.status.toLowerCase(),
+            date: item.date,
+            // These would ideally come from DB columns for 'recurrence'
+            isRecurring: item.category === 'Payroll' || item.category === 'Rent' || false,
+            recurrenceInterval: 'Monthly', // Placeholder logic
+            nextDueDate: '2024-03-01'      // Placeholder logic
+        }));
+
+    const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+    const recurringTotal = expenses.filter(i => i.isRecurring).reduce((sum, item) => sum + item.amount, 0);
 
     return (
         <Card className="dark:border-white/10 dark:bg-white/5 border-slate-200 bg-white overflow-hidden">
@@ -117,7 +100,7 @@ export function ExpensesWidget() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockExpenses.map((expense) => (
+                        {expenses.map((expense) => (
                             <TableRow key={expense.id} className="dark:border-white/5 border-slate-100 hover:bg-slate-50 dark:hover:bg-white/5">
                                 <TableCell>
                                     <div className="flex flex-col">
@@ -140,8 +123,8 @@ export function ExpensesWidget() {
                                 <TableCell>
                                     <Badge
                                         className={`border-0 ${expense.status === 'paid' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
-                                                expense.status === 'pending' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' :
-                                                    'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                                            expense.status === 'pending' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                                'bg-rose-500/10 text-rose-600 dark:text-rose-400'
                                             }`}
                                     >
                                         {expense.status === 'paid' && <CheckCircle2 className="mr-1 h-3 w-3" />}
@@ -165,13 +148,17 @@ export function ExpensesWidget() {
                             <Receipt className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-100">AI Receipt Scanning</p>
-                            <p className="text-xs text-indigo-600 dark:text-indigo-300">Upload receipts to auto-generate expense records</p>
+                            <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-100">AI Receipt Scanner</p>
+                            <p className="text-xs text-indigo-600 dark:text-indigo-300">
+                                Supports PDF, DOCX, TXT, & Images. <span className="font-semibold text-rose-500">No code files.</span>
+                            </p>
                         </div>
                     </div>
-                    <Button size="sm" variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-500/30 dark:text-indigo-300 dark:hover:bg-indigo-500/10">
-                        Upload Receipt
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-500/30 dark:text-indigo-300 dark:hover:bg-indigo-500/10">
+                            Upload Files
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>

@@ -27,7 +27,7 @@ export default function Home() {
             <span className="hidden text-sm text-slate-600 sm:inline">Demo Mode</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/login">
+            <Link href="/signin">
               <Button variant="ghost" className="text-slate-600 hover:text-slate-900">
                 Sign In
               </Button>

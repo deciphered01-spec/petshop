@@ -25,50 +25,13 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-// Mock data reflecting the restock_batches schema
-const mockBatches = [
-    {
-        id: "1",
-        batchNumber: "BATCH-20240201-001",
-        productName: "Royal Canin Puppy (Pack of 12)",
-        supplier: "PetFood Global Ltd",
-        quantityReceived: 50,
-        remainingQuantity: 42,
-        costPricePerUnit: 15000,
-        sellingPriceAtStocking: 22000,
-        receivedDate: "2024-02-01",
-        status: "Active",
-    },
-    {
-        id: "2",
-        batchNumber: "BATCH-20240128-005",
-        productName: "Pedigree Adult (10kg)",
-        supplier: "Local Distributors Inc",
-        quantityReceived: 100,
-        remainingQuantity: 15,
-        costPricePerUnit: 18000,
-        sellingPriceAtStocking: 25000,
-        receivedDate: "2024-01-28",
-        status: "Low Stock",
-    },
-    {
-        id: "3",
-        batchNumber: "BATCH-20240115-002",
-        productName: "Whiskas Cat Food (Tuna)",
-        supplier: "PetFood Global Ltd",
-        quantityReceived: 200,
-        remainingQuantity: 0,
-        costPricePerUnit: 4500,
-        sellingPriceAtStocking: 6500,
-        receivedDate: "2024-01-15",
-        status: "Depleted",
-    },
-];
+import { useRestocks } from "@/hooks/useRestocks";
 
 export function RestockAnalytics() {
     const [searchTerm, setSearchTerm] = useState("");
+    const { data: batches } = useRestocks();
 
-    const filteredBatches = mockBatches.filter(batch =>
+    const filteredBatches = (batches || []).filter(batch =>
         batch.batchNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         batch.productName.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -121,7 +84,7 @@ export function RestockAnalytics() {
                                 const totalCost = batch.quantityReceived * batch.costPricePerUnit;
                                 const potentialRevenue = batch.quantityReceived * batch.sellingPriceAtStocking;
                                 const potentialProfit = potentialRevenue - totalCost;
-                                const roi = ((potentialProfit / totalCost) * 100).toFixed(1);
+                                const roi = totalCost > 0 ? ((potentialProfit / totalCost) * 100).toFixed(1) : "0.0";
 
                                 return (
                                     <TableRow key={batch.id} className="dark:border-white/5 border-slate-100 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
