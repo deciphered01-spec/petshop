@@ -29,20 +29,25 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-    // creating a new Response object with NextResponse.next() make sure to:
-    // 1. Pass the request in it, like so:
-    //    const myNewResponse = NextResponse.next({ request })
-    // 2. Copy over the cookies, like so:
-    //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-    // 3. Change the myNewResponse object to fit your needs, but avoid changing
-    //    the cookies!
-    // 4. Finally:
-    //    return myNewResponse
-    // If this is not done, you may be causing the browser and server to go out
-    // of sync and terminate the user's session prematurely!
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
 
-    await supabase.auth.getUser()
+    // Define protected routes that require authentication
+    const protectedRoutes = ['/admin', '/dashboard', '/operations', '/inventory', '/sales', '/auditor']
+    const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
+
+    // Redirect to signin if accessing protected route without authentication
+    if (isProtectedRoute && !user) {
+        const redirectUrl = new URL('/signin', request.url)
+        redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
+        return NextResponse.redirect(redirectUrl)
+    }
+
+    // Redirect to dashboard if already authenticated and trying to access signin
+    if (request.nextUrl.pathname === '/signin' && user) {
+        return NextResponse.redirect(new URL('/admin', request.url))
+    }
 
     return supabaseResponse
 }

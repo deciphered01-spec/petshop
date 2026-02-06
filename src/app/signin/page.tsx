@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Zap, Lock, Mail, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
     const supabase = createClient();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -34,7 +35,9 @@ export default function LoginPage() {
                 throw error;
             }
 
-            router.push("/admin"); // Redirect to admin dashboard on success
+            // Redirect to the original page or admin dashboard
+            const redirectTo = searchParams.get('redirectTo') || '/admin';
+            router.push(redirectTo);
             router.refresh();
         } catch (err: any) {
             console.error("Login error:", err);

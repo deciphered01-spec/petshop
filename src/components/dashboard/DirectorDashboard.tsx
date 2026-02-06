@@ -669,42 +669,44 @@ export function DirectorDashboard({ viewAsRole }: DirectorDashboardProps = {}) {
             </motion.div>
           </div>
 
-          {/* Footer Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4"
-          >
-            {[
-              { label: "Active Users", value: "24", icon: Users, color: "emerald" },
-              { label: "Orders Today", value: "156", icon: Package, color: "blue" },
-              { label: "Pending Reviews", value: "8", icon: Shield, color: "amber" },
-              { label: "System Health", value: "99.9%", icon: Activity, color: "violet" },
-            ].map((item, index) => {
-              const Icon = item.icon;
-              const colorClasses: Record<string, string> = {
-                emerald: isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600",
-                blue: isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600",
-                amber: isDark ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-600",
-                violet: isDark ? "bg-violet-500/20 text-violet-400" : "bg-violet-100 text-violet-600",
-              };
-              return (
-                <div
-                  key={item.label}
-                  className={`flex items-center gap-3 p-4 rounded-xl ${themeClasses.footerStat}`}
-                >
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${colorClasses[item.color]?.split(" ")[0]}`}>
-                    <Icon className={`h-5 w-5 ${colorClasses[item.color]?.split(" ")[1]}`} />
+          {/* Footer Stats - Admin Only */}
+          {isAdmin && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4"
+            >
+              {[
+                { label: "Active Users", value: "24", icon: Users, color: "emerald" },
+                { label: "Orders Today", value: "156", icon: Package, color: "blue" },
+                { label: "Pending Reviews", value: "8", icon: Shield, color: "amber" },
+                { label: "System Health", value: "99.9%", icon: Activity, color: "violet" },
+              ].map((item, index) => {
+                const Icon = item.icon;
+                const colorClasses: Record<string, string> = {
+                  emerald: isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600",
+                  blue: isDark ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600",
+                  amber: isDark ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-600",
+                  violet: isDark ? "bg-violet-500/20 text-violet-400" : "bg-violet-100 text-violet-600",
+                };
+                return (
+                  <div
+                    key={item.label}
+                    className={`flex items-center gap-3 p-4 rounded-xl ${themeClasses.footerStat}`}
+                  >
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${colorClasses[item.color]?.split(" ")[0]}`}>
+                      <Icon className={`h-5 w-5 ${colorClasses[item.color]?.split(" ")[1]}`} />
+                    </div>
+                    <div>
+                      <p className={`text-xs ${themeClasses.textMuted}`}>{item.label}</p>
+                      <p className={`text-lg font-bold ${themeClasses.text}`}>{item.value}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className={`text-xs ${themeClasses.textMuted}`}>{item.label}</p>
-                    <p className={`text-lg font-bold ${themeClasses.text}`}>{item.value}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </main>
       </div>
     </div>
